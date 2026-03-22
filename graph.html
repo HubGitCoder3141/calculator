@@ -60,13 +60,22 @@
     }
     .func-row input[type="text"] {
       flex: 1;
+      min-width: 100px;
       padding: 0.4rem;
       font-family: var(--mono);
       font-size: 0.9rem;
       border: 1px solid var(--border);
       border-radius: 4px;
-      background: var(--surface);
-      color: var(--text);
+      background: #fff;
+      color: #000;
+      display: inline-block !important;
+    }
+    #funcInputs {
+      display: block !important;
+    }
+    #funcInputs:empty::before {
+      content: "Loading...";
+      color: var(--text-muted);
     }
     .func-color {
       width: 20px;
