@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CalcLab - Calculators & Tools</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#B85C38">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="CalcLab">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -366,14 +371,25 @@
     </div>
   </div>
 
-  <style>
-    .settings-group { margin-bottom: 1rem; }
-    .settings-group label { display: block; font-family: var(--mono); font-size: 0.8rem; margin-bottom: 0.3rem; }
-    .settings-group select, .settings-group input[type="number"] { width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); }
-    .settings-group input[type="range"] { width: 70%; }
-    .settings-btns { display: flex; gap: 0.5rem; margin-top: 1rem; }
-    .settings-btns button { flex: 1; padding: 0.5rem; background: var(--accent); color: #fff; border: none; border-radius: 4px; cursor: pointer; }
-    .settings-btns button.secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
-  </style>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playClick() {
+      if (localStorage.getItem('soundEnabled') === 'true') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = 800;
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.05);
+      }
+    }
+  </script>
 </body>
 </html>
