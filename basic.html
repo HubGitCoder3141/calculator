@@ -29,10 +29,19 @@
     <div class="calculator-container">
       <div class="calc-wrapper">
         <div class="calc-display">
+          <div class="display-toolbar">
+            <button class="toolbar-btn" onclick="calc.copyResult()" title="Copy result">📋</button>
+            <button class="toolbar-btn" onclick="calc.clearHistory()" title="Clear history">🗑️</button>
+          </div>
           <div class="expression" id="expr"></div>
           <div class="result" id="result">0</div>
+          <div class="memory-indicator" id="memIndicator"></div>
         </div>
         <div class="calc-buttons">
+          <button class="calc-btn func" onclick="calc.memoryClear()" title="Memory Clear">MC</button>
+          <button class="calc-btn func" onclick="calc.memoryRecall()" title="Memory Recall">MR</button>
+          <button class="calc-btn func" onclick="calc.memoryAdd()" title="Memory Add">M+</button>
+          <button class="calc-btn func" onclick="calc.memorySub()" title="Memory Subtract">M-</button>
           <button class="calc-btn clear" onclick="calc.clear()">C</button>
           <button class="calc-btn" onclick="calc.backspace()">⌫</button>
           <button class="calc-btn" onclick="calc.operator('%')">%</button>
@@ -84,10 +93,12 @@
     const calc = {
       current: '0',
       expr: '',
+      memory: 0,
       
       update() {
         document.getElementById('result').textContent = this.current;
         document.getElementById('expr').textContent = this.expr;
+        document.getElementById('memIndicator').textContent = this.memory !== 0 ? `M: ${this.memory}` : '';
       },
       
       number(n) {
@@ -126,6 +137,46 @@
         this.update();
       },
       
+      memoryClear() {
+        this.memory = 0;
+        this.update();
+      },
+      
+      memoryRecall() {
+        if (this.memory !== 0) {
+          if (this.current === '0') this.current = String(this.memory);
+          else this.current += String(this.memory);
+        }
+        this.update();
+      },
+      
+      memoryAdd() {
+        const val = parseFloat(this.current);
+        if (!isNaN(val)) {
+          this.memory += val;
+          this.current = '0';
+        }
+        this.update();
+      },
+      
+      memorySub() {
+        const val = parseFloat(this.current);
+        if (!isNaN(val)) {
+          this.memory -= val;
+          this.current = '0';
+        }
+        this.update();
+      },
+      
+      copyResult() {
+        const result = this.current === 'Error' ? '0' : this.current;
+        navigator.clipboard.writeText(result).then(() => {
+          const btn = document.querySelector('.toolbar-btn');
+          btn.textContent = '✓';
+          setTimeout(() => btn.textContent = '📋', 1000);
+        });
+      },
+      
       equals() {
         try {
           const fullExpr = this.expr + this.current;
@@ -143,7 +194,7 @@
       addHistory(expr, result) {
         const hist = JSON.parse(localStorage.getItem('basicHistory') || '[]');
         hist.unshift({ expr, result: String(result), time: Date.now() });
-        if (hist.length > 20) hist.pop();
+        if (hist.length > 50) hist.pop();
         localStorage.setItem('basicHistory', JSON.stringify(hist));
         renderHistory(hist);
       },

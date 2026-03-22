@@ -193,6 +193,36 @@ footer {
   word-break: break-all;
 }
 
+.calc-display .display-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.calc-display .toolbar-btn {
+  font-size: 0.9rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  cursor: pointer;
+}
+
+.calc-display .toolbar-btn:hover {
+  background: var(--border);
+  color: var(--bg);
+}
+
+.calc-display .memory-indicator {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  text-align: left;
+  margin-top: 0.3rem;
+  min-height: 1rem;
+}
+
 .calc-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -202,7 +232,7 @@ footer {
 
 .calc-buttons.scientific {
   grid-template-columns: repeat(5, 1fr);
-  max-width: 380px;
+  max-width: 400px;
 }
 
 .calc-btn {

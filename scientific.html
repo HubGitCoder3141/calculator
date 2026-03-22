@@ -28,15 +28,25 @@
       <div class="mode-toggle">
         <button class="active" id="radBtn" onclick="calc.setAngle('RAD')">RAD</button>
         <button id="degBtn" onclick="calc.setAngle('DEG')">DEG</button>
+        <button id="gradBtn" onclick="calc.setAngle('GRAD')">GRAD</button>
       </div>
     </div>
     <div class="calculator-container">
       <div class="calc-wrapper">
         <div class="calc-display">
+          <div class="display-toolbar">
+            <button class="toolbar-btn" onclick="calc.copyResult()" title="Copy result">📋</button>
+            <button class="toolbar-btn" onclick="calc.clearHistory()" title="Clear history">🗑️</button>
+          </div>
           <div class="expression" id="expr"></div>
           <div class="result" id="result">0</div>
+          <div class="memory-indicator" id="memIndicator"></div>
         </div>
         <div class="calc-buttons scientific">
+          <button class="calc-btn func" onclick="calc.memoryClear()" title="Memory Clear">MC</button>
+          <button class="calc-btn func" onclick="calc.memoryRecall()" title="Memory Recall">MR</button>
+          <button class="calc-btn func" onclick="calc.memoryAdd()" title="Memory Add">M+</button>
+          <button class="calc-btn func" onclick="calc.memorySub()" title="Memory Subtract">M-</button>
           <button class="calc-btn clear" onclick="calc.clear()">C</button>
           <button class="calc-btn" onclick="calc.backspace()">⌫</button>
           <button class="calc-btn func" onclick="calc.input('(')">(</button>
@@ -49,29 +59,35 @@
           <button class="calc-btn func" onclick="calc.func('sqrt')">√</button>
           <button class="calc-btn operator" onclick="calc.operator('*')">×</button>
           
+          <button class="calc-btn func" onclick="calc.func('asin')">asin</button>
+          <button class="calc-btn func" onclick="calc.func('acos')">acos</button>
+          <button class="calc-btn func" onclick="calc.func('atan')">atan</button>
+          <button class="calc-btn func" onclick="calc.func('cbrt')">∛</button>
+          <button class="calc-btn operator" onclick="calc.operator('-')">−</button>
+          
           <button class="calc-btn func" onclick="calc.func('log')">log</button>
           <button class="calc-btn func" onclick="calc.func('ln')">ln</button>
           <button class="calc-btn func" onclick="calc.func('pow')">xⁿ</button>
           <button class="calc-btn func" onclick="calc.func('pi')">π</button>
-          <button class="calc-btn operator" onclick="calc.operator('-')">−</button>
+          <button class="calc-btn operator" onclick="calc.operator('+')">+</button>
           
           <button class="calc-btn" onclick="calc.number('7')">7</button>
           <button class="calc-btn" onclick="calc.number('8')">8</button>
           <button class="calc-btn" onclick="calc.number('9')">9</button>
           <button class="calc-btn func" onclick="calc.func('e')">e</button>
-          <button class="calc-btn operator" onclick="calc.operator('+')">+</button>
+          <button class="calc-btn equals" onclick="calc.equals()">=</button>
           
           <button class="calc-btn" onclick="calc.number('4')">4</button>
           <button class="calc-btn" onclick="calc.number('5')">5</button>
           <button class="calc-btn" onclick="calc.number('6')">6</button>
           <button class="calc-btn func" onclick="calc.func('fact')">n!</button>
-          <button class="calc-btn equals" onclick="calc.equals()">=</button>
+          <button class="calc-btn" onclick="calc.decimal()">.</button>
           
           <button class="calc-btn" onclick="calc.number('1')">1</button>
           <button class="calc-btn" onclick="calc.number('2')">2</button>
           <button class="calc-btn" onclick="calc.number('3')">3</button>
           <button class="calc-btn" onclick="calc.number('0')">0</button>
-          <button class="calc-btn" onclick="calc.decimal()">.</button>
+          <button class="calc-btn func" onclick="calc.func('abs')">|x|</button>
         </div>
       </div>
       <div class="history-panel">
@@ -100,14 +116,17 @@
       document.documentElement.setAttribute('data-theme', 'dark');
     }
 
-    const calc = {
+const calc = {
       current: '0',
       expr: '',
       angle: 'RAD',
+      memory: 0,
+      ans: 0,
       
       update() {
         document.getElementById('result').textContent = this.current;
         document.getElementById('expr').textContent = this.expr;
+        document.getElementById('memIndicator').textContent = this.memory !== 0 ? `M: ${this.memory}` : '';
       },
       
       number(n) {
@@ -137,7 +156,19 @@
         this.angle = mode;
         document.getElementById('radBtn').classList.toggle('active', mode === 'RAD');
         document.getElementById('degBtn').classList.toggle('active', mode === 'DEG');
+        document.getElementById('gradBtn').classList.toggle('active', mode === 'GRAD');
       },
+      
+      const toRad = (val) => {
+        if (this.angle === 'DEG') return val * Math.PI / 180;
+        if (this.angle === 'GRAD') return val * Math.PI / 200;
+        return val;
+      };
+      const fromRad = (val) => {
+        if (this.angle === 'DEG') return val * 180 / Math.PI;
+        if (this.angle === 'GRAD') return val * 200 / Math.PI;
+        return val;
+      };
       
       func(f) {
         const val = parseFloat(this.current);
@@ -147,13 +178,18 @@
             case 'pi': result = Math.PI; break;
             case 'e': result = Math.E; break;
             case 'sqrt': result = Math.sqrt(Math.abs(val)); break;
+            case 'cbrt': result = Math.cbrt(val); break;
+            case 'abs': result = Math.abs(val); break;
             case 'pow': this.expr += this.current + ' ** '; this.current = ''; this.update(); return;
             case 'fact': result = val >= 0 && Number.isInteger(val) ? (val > 170 ? 'Overflow' : factorial(val)) : 'Error'; break;
             case 'log': result = val > 0 ? Math.log10(val) : 'Error'; break;
             case 'ln': result = val > 0 ? Math.log(val) : 'Error'; break;
-            case 'sin': result = this.angle === 'DEG' ? Math.sin(val * Math.PI / 180) : Math.sin(val); break;
-            case 'cos': result = this.angle === 'DEG' ? Math.cos(val * Math.PI / 180) : Math.cos(val); break;
-            case 'tan': result = this.angle === 'DEG' ? Math.tan(val * Math.PI / 180) : Math.tan(val); break;
+            case 'sin': result = Math.sin(toRad(val)); break;
+            case 'cos': result = Math.cos(toRad(val)); break;
+            case 'tan': result = Math.tan(toRad(val)); break;
+            case 'asin': result = fromRad(Math.asin(val)); break;
+            case 'acos': result = fromRad(Math.acos(val)); break;
+            case 'atan': result = fromRad(Math.atan(val)); break;
             default: return;
           }
           this.current = String(result);
@@ -175,6 +211,46 @@
         this.update();
       },
       
+      memoryClear() {
+        this.memory = 0;
+        this.update();
+      },
+      
+      memoryRecall() {
+        if (this.memory !== 0) {
+          if (this.current === '0') this.current = String(this.memory);
+          else this.current += String(this.memory);
+        }
+        this.update();
+      },
+      
+      memoryAdd() {
+        const val = parseFloat(this.current);
+        if (!isNaN(val)) {
+          this.memory += val;
+          this.current = '0';
+        }
+        this.update();
+      },
+      
+      memorySub() {
+        const val = parseFloat(this.current);
+        if (!isNaN(val)) {
+          this.memory -= val;
+          this.current = '0';
+        }
+        this.update();
+      },
+      
+      copyResult() {
+        const result = this.current === 'Error' ? '0' : this.current;
+        navigator.clipboard.writeText(result).then(() => {
+          const btn = document.querySelector('.toolbar-btn');
+          btn.textContent = '✓';
+          setTimeout(() => btn.textContent = '📋', 1000);
+        });
+      },
+      
       equals() {
         try {
           let fullExpr = this.expr + this.current;
@@ -184,6 +260,7 @@
           const result = Function('"use strict";return (' + fullExpr + ')')();
           if (!isFinite(result)) throw new Error();
           
+          this.ans = result;
           this.addHistory(this.expr + this.current, result);
           this.current = String(Math.round(result * 1e10) / 1e10);
           this.expr = '';
@@ -196,7 +273,7 @@
       addHistory(expr, result) {
         const hist = JSON.parse(localStorage.getItem('sciHistory') || '[]');
         hist.unshift({ expr, result: String(result), time: Date.now() });
-        if (hist.length > 20) hist.pop();
+        if (hist.length > 50) hist.pop();
         localStorage.setItem('sciHistory', JSON.stringify(hist));
         renderHistory(hist);
       },

@@ -237,10 +237,11 @@
           <button class="active" onclick="setMode('func')">Y=</button>
           <button onclick="setMode('param')">Param</button>
           <button onclick="setMode('polar')">Polar</button>
+          <button onclick="setMode('ineq')">Inequality</button>
         </div>
         <div class="axis-range">
-          <div><label>X:</label> <input type="number" id="xMin" value="-10" onchange="drawGraph()"> to <input type="number" id="xMax" value="10" onchange="drawGraph()"></div>
-          <div><label>Y:</label> <input type="number" id="yMin" value="-10" onchange="drawGraph()"> to <input type="number" id="yMax" value="10" onchange="drawGraph()"></div>
+          <div><label>X:</label> <input type="number" id="xMin" value="-10" onchange="updateAxisFromInput(); drawGraph(); saveState();"> to <input type="number" id="xMax" value="10" onchange="updateAxisFromInput(); drawGraph(); saveState();"></div>
+          <div><label>Y:</label> <input type="number" id="yMin" value="-10" onchange="updateAxisFromInput(); drawGraph(); saveState();"> to <input type="number" id="yMax" value="10" onchange="updateAxisFromInput(); drawGraph(); saveState();"></div>
         </div>
         <div id="funcInputs"></div>
         <div id="paramInputs" class="param-inputs"></div>
@@ -261,8 +262,10 @@
           <button onclick="setZoom('trig')">Trig</button>
           <button onclick="setZoom('dec')">Dec</button>
           <button onclick="toggleTrace()" id="traceBtn">Trace</button>
-          <button onclick="findRoots()">Find Roots</button>
+          <button onclick="findRoots()">Roots</button>
           <button onclick="generateTable()">Table</button>
+          <button onclick="downloadPNG()">PNG</button>
+          <button onclick="downloadSVG()">SVG</button>
         </div>
         <div class="graph-canvas-wrap">
           <canvas id="graphCanvas"></canvas>
@@ -295,6 +298,12 @@
       { expr: '2*cos(θ)', active: true },
       { expr: '1+cos(θ)', active: false }
     ];
+    let ineqFuncs = [
+      { expr: 'X', op: '>', active: true },
+      { expr: '', op: '>=', active: false },
+      { expr: '', op: '<', active: false },
+      { expr: '', op: '<=', active: false }
+    ];
     let variables = { a: 1, b: 1, c: 1, d: 0 };
     let isTracing = false;
     let traceX = 0;
@@ -320,10 +329,11 @@
     function setMode(m) {
       mode = m;
       document.querySelectorAll('.mode-tabs button').forEach((b, i) => {
-        b.classList.toggle('active', ['func', 'param', 'polar'].indexOf(m) === i);
+        b.classList.toggle('active', ['func', 'param', 'polar', 'ineq'].indexOf(m) === i);
       });
-      document.getElementById('funcInputs').style.display = m === 'func' ? 'block' : 'none';
-      document.getElementById('paramInputs').classList.toggle('show', m !== 'func');
+      document.getElementById('funcInputs').style.display = m === 'func' || m === 'ineq' ? 'block' : 'none';
+      document.getElementById('paramInputs').classList.toggle('show', m !== 'func' && m !== 'ineq');
+      generateFuncInputs();
       drawGraph();
     }
 
@@ -350,7 +360,7 @@
             <input type="text" value="${f.y}" placeholder="T" style="width:80px" oninput="updateParamY(${i}, this.value)">
           </div>
         `).join('');
-      } else {
+      } else if (mode === 'polar') {
         container.innerHTML = '';
         document.getElementById('paramInputs').innerHTML = polarFuncs.map((f, i) => `
           <div class="func-row ${f.active ? 'active' : ''}">
@@ -360,16 +370,35 @@
             <input type="text" value="${f.expr}" placeholder="θ" oninput="updatePolar(${i}, this.value)">
           </div>
         `).join('');
+      } else if (mode === 'ineq') {
+        container.innerHTML = ineqFuncs.map((f, i) => `
+          <div class="func-row ${f.active ? 'active' : ''}">
+            <input type="checkbox" ${f.active ? 'checked' : ''} onchange="toggleIneq(${i})">
+            <span class="func-color" style="background:${colors[i]}"></span>
+            <span style="font-family:var(--mono);font-size:0.8rem;">Y${i+1}</span>
+            <select onchange="updateIneqOp(${i}, this.value)" style="padding:0.3rem;font-family:var(--mono);font-size:0.8rem;">
+              <option value=">" ${f.op === '>' ? 'selected' : ''}>></option>
+              <option value=">=" ${f.op === '>=' ? 'selected' : ''}>>=</option>
+              <option value="<" ${f.op === '<' ? 'selected' : ''}><</option>
+              <option value="<=" ${f.op === '<=' ? 'selected' : ''}><=</option>
+            </select>
+            <input type="text" value="${f.expr}" placeholder="X" oninput="updateIneq(${i}, this.value)" onkeypress="if(event.key==='Enter')drawGraph()">
+          </div>
+        `).join('');
       }
     }
 
-    function toggleFunc(i) { functions[i].active = !functions[i].active; generateFuncInputs(); drawGraph(); }
-    function updateFunc(i, v) { functions[i].expr = v; }
-    function toggleParam(i) { paramFuncs[i].active = !paramFuncs[i].active; generateFuncInputs(); drawGraph(); }
-    function updateParamX(i, v) { paramFuncs[i].x = v; }
-    function updateParamY(i, v) { paramFuncs[i].y = v; }
-    function togglePolar(i) { polarFuncs[i].active = !polarFuncs[i].active; generateFuncInputs(); drawGraph(); }
-    function updatePolar(i, v) { polarFuncs[i].expr = v; }
+    function toggleIneq(i) { ineqFuncs[i].active = !ineqFuncs[i].active; generateFuncInputs(); drawGraph(); saveState(); }
+    function updateIneq(i, v) { ineqFuncs[i].expr = v; saveState(); }
+    function updateIneqOp(i, op) { ineqFuncs[i].op = op; generateFuncInputs(); drawGraph(); saveState(); }
+
+    function toggleFunc(i) { functions[i].active = !functions[i].active; generateFuncInputs(); drawGraph(); saveState(); }
+    function updateFunc(i, v) { functions[i].expr = v; saveState(); }
+    function toggleParam(i) { paramFuncs[i].active = !paramFuncs[i].active; generateFuncInputs(); drawGraph(); saveState(); }
+    function updateParamX(i, v) { paramFuncs[i].x = v; saveState(); }
+    function updateParamY(i, v) { paramFuncs[i].y = v; saveState(); }
+    function togglePolar(i) { polarFuncs[i].active = !polarFuncs[i].active; generateFuncInputs(); drawGraph(); saveState(); }
+    function updatePolar(i, v) { polarFuncs[i].expr = v; saveState(); }
 
     function parseMath(expr) {
       if (!expr) return null;
@@ -502,7 +531,7 @@
             ctx.stroke();
           } catch (e) {}
         });
-      } else {
+      } else if (mode === 'polar') {
         polarFuncs.forEach((f, i) => {
           if (!f.active || !f.expr) return;
           const parsed = parseMath(f.expr);
@@ -529,6 +558,41 @@
             ctx.stroke();
           } catch (e) {}
         });
+      } else if (mode === 'ineq') {
+        ineqFuncs.forEach((f, i) => {
+          if (!f.active || !f.expr) return;
+          const parsed = parseMath(f.expr);
+          if (!parsed) return;
+          try {
+            const func = new Function('X', `return ${parsed}`);
+            ctx.fillStyle = colors[i] + '40';
+            ctx.beginPath();
+            for (let px = 0; px < w; px++) {
+              const x = xMin + px / scaleX;
+              const y = func(x);
+              if (!isFinite(y)) continue;
+              let satisfies = false;
+              switch (f.op) {
+                case '>': satisfies = y > xMin; break;
+                case '>=': satisfies = y >= xMin; break;
+                case '<': satisfies = y < xMax; break;
+                case '<=': satisfies = y <= xMax; break;
+              }
+              if (satisfies) {
+                const op = f.op === '>' || f.op === '>=' ? '>=' : '<=';
+                let meets = false;
+                if (op === '>=') meets = y >= func(xMin + (px > 0 ? (xMin + (px-1)/scaleX) : xMin + 1/scaleX));
+                else meets = y <= func(xMin + (px > 0 ? (xMin + (px-1)/scaleX) : xMin + 1/scaleX));
+                if (px === 0) ctx.moveTo(px, toPxY(y));
+                else ctx.lineTo(px, toPxY(y));
+              }
+            }
+            ctx.lineTo(w, toPxY(f.op === '>' || f.op === '>=' ? yMax : yMin));
+            ctx.lineTo(0, toPxY(f.op === '>' || f.op === '>=' ? yMax : yMin));
+            ctx.closePath();
+            ctx.fill();
+          } catch (e) {}
+        });
       }
       
       // Update trace info
@@ -551,6 +615,7 @@
       yMin = cy - dy; yMax = cy + dy;
       updateAxisInputs();
       drawGraph();
+      saveState();
     }
 
     function zoomOut() {
@@ -562,15 +627,17 @@
       yMin = cy - dy; yMax = cy + dy;
       updateAxisInputs();
       drawGraph();
+      saveState();
     }
 
     function zoomFit() {
       xMin = -10; xMax = 10; yMin = -10; yMax = 10;
       updateAxisInputs();
       drawGraph();
+      saveState();
     }
 
-    function setZoom(type) {
+function setZoom(type) {
       if (type === 'trig') {
         xMin = -2 * Math.PI; xMax = 2 * Math.PI;
         yMin = -3; yMax = 3;
@@ -579,6 +646,14 @@
       }
       updateAxisInputs();
       drawGraph();
+      saveState();
+    }
+
+    function updateAxisFromInput() {
+      xMin = parseFloat(document.getElementById('xMin').value) || -10;
+      xMax = parseFloat(document.getElementById('xMax').value) || 10;
+      yMin = parseFloat(document.getElementById('yMin').value) || -10;
+      yMax = parseFloat(document.getElementById('yMax').value) || 10;
     }
 
     function updateAxisInputs() {
@@ -587,6 +662,12 @@
       document.getElementById('yMin').value = Math.round(yMin);
       document.getElementById('yMax').value = Math.round(yMax);
     }
+      updateAxisInputs();
+      drawGraph();
+      saveState();
+    }
+
+    
 
     function toggleTrace() {
       isTracing = !isTracing;
@@ -679,6 +760,73 @@
         row.querySelector('span').textContent = variables[Object.keys(variables)[i]];
       });
       drawGraph();
+      saveState();
+    }
+
+    function downloadPNG() {
+      const canvas = document.getElementById('graphCanvas');
+      const link = document.createElement('a');
+      link.download = 'graph.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    function downloadSVG() {
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      const xRange = xMax - xMin;
+      const yRange = yMax - yMin;
+      const scaleX = w / xRange;
+      const scaleY = h / yRange;
+      const toPxX = (x) => (x - xMin) * scaleX;
+      const toPxY = (y) => h - (y - yMin) * scaleY;
+      
+      let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">`;
+      svg += `<rect width="${w}" height="${h}" fill="${document.documentElement.getAttribute('data-theme') === 'dark' ? '#1a1a1a' : '#f5f0e8'}"/>`;
+      
+      const gridCol = document.documentElement.getAttribute('data-theme') === 'dark' ? '#333' : '#ddd';
+      const xStep = getGridStep(xRange);
+      const yStep = getGridStep(yRange);
+      
+      for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) {
+        svg += `<line x1="${toPxX(x)}" y1="0" x2="${toPxX(x)}" y2="${h}" stroke="${gridCol}" stroke-width="0.5"/>`;
+      }
+      for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) {
+        svg += `<line x1="0" y1="${toPxY(y)}" x2="${w}" y2="${toPxY(y)}" stroke="${gridCol}" stroke-width="0.5"/>`;
+      }
+      
+      const fg = document.documentElement.getAttribute('data-theme') === 'dark' ? '#f5f0e8' : '#1a1a1a';
+      if (xMin <= 0 && xMax >= 0) svg += `<line x1="${toPxX(0)}" y1="0" x2="${toPxX(0)}" y2="${h}" stroke="${fg}" stroke-width="1.5"/>`;
+      if (yMin <= 0 && yMax >= 0) svg += `<line x1="0" y1="${toPxY(0)}" x2="${w}" y2="${toPxY(0)}" stroke="${fg}" stroke-width="1.5"/>`;
+      
+      if (mode === 'func') {
+        functions.forEach((f, i) => {
+          if (!f.active || !f.expr) return;
+          let pathD = '';
+          let started = false;
+          for (let px = 0; px < w; px++) {
+            const x = xMin + px / scaleX;
+            try {
+              const func = new Function('X', 'return ' + parseMath(f.expr));
+              const y = func(x);
+              if (isFinite(y) && y >= yMin - yRange && y <= yMax + yRange) {
+                const py = toPxY(y);
+                if (!started) { pathD += `M ${px} ${py}`; started = true; }
+                else pathD += ` L ${px} ${py}`;
+              } else { started = false; }
+            } catch (e) {}
+          }
+          if (pathD) svg += `<path d="${pathD}" fill="none" stroke="${colors[i]}" stroke-width="2"/>`;
+        });
+      }
+      
+      svg += '</svg>';
+      
+      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const link = document.createElement('a');
+      link.download = 'graph.svg';
+      link.href = URL.createObjectURL(blob);
+      link.click();
     }
 
     // Canvas events
@@ -696,6 +844,7 @@
         updateAxisInputs();
         drawGraph();
         dragStart = { x: e.clientX, y: e.clientY };
+        saveState();
       }
       if (isTracing) {
         const rect = document.getElementById('graphCanvas').getBoundingClientRect();
@@ -717,13 +866,41 @@
       yMax = cy + (yMax - cy) * factor;
       updateAxisInputs();
       drawGraph();
+      saveState();
     }, { passive: false });
 
     generateFuncInputs();
     generateSliders();
+    loadState();
     drawGraph();
 
     window.addEventListener('resize', drawGraph);
+
+    function saveState() {
+      localStorage.setItem('graphState', JSON.stringify({
+        mode, functions, paramFuncs, polarFuncs, variables,
+        xMin, xMax, yMin, yMax
+      }));
+    }
+
+    function loadState() {
+      try {
+        const state = JSON.parse(localStorage.getItem('graphState'));
+        if (state) {
+          mode = state.mode || 'func';
+          functions = state.functions || functions;
+          paramFuncs = state.paramFuncs || paramFuncs;
+          polarFuncs = state.polarFuncs || polarFuncs;
+          variables = state.variables || variables;
+          xMin = state.xMin ?? -10;
+          xMax = state.xMax ?? 10;
+          yMin = state.yMin ?? -10;
+          yMax = state.yMax ?? 10;
+          setMode(mode);
+          updateAxisInputs();
+        }
+      } catch (e) {}
+    }
   </script>
 </body>
 </html>
