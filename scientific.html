@@ -18,7 +18,7 @@
       <a href="scientific.html" class="active">Scientific</a>
       <a href="graph.html">Graph</a>
       <button class="theme-btn" onclick="toggleTheme()">◐</button>
-      <button class="theme-btn" onclick="showSettings()" title="Settings">⚙</button>
+      <a href="settings.html" class="theme-btn" title="Settings">⚙</a>
     </nav>
   </header>
 
@@ -470,103 +470,6 @@ const calc = {
         }
       },
       
-      toFraction(num) {
-        if (!this.fractionMode || !isFinite(num) || num === 0) return String(num);
-        const tolerance = 1e-6;
-        let h1 = 1, k1 = 0, h2 = 0, k2 = 1;
-        let b = num;
-        while (true) {
-          const a = Math.floor(b);
-          let frac = a + k2 / k1;
-          if (Math.abs(num - frac) < tolerance || k1 > 100) {
-            if (k1 === 1) return String(a);
-            return (a === 0 ? '' : a) + ' ' + (h1 === k1 ? '1' : h1 + '/' + k1);
-          }
-          const h3 = a * h1 + h2, k3 = a * k1 + k2;
-          h2 = h1; k2 = k1;
-          h1 = h3; k1 = k3;
-          if (Math.abs(num - a) < tolerance) break;
-          b = 1 / (b - a);
-        }
-        return String(num);
-      },
-      
-      toggleFraction() {
-        this.fractionMode = !this.fractionMode;
-        document.querySelector('.calc-btn[title="Toggle fraction display"]').classList.toggle('active', this.fractionMode);
-        this.update();
-      },
-      
-      number(n) {
-        if (this.current === '0' || this.current === 'Error') this.current = n;
-        else if (this.current.length < 15) this.current += n;
-        this.update();
-      },
-      
-      decimal() {
-        if (!this.current.includes('.')) this.current += '.';
-        this.update();
-      },
-      
-      input(val) {
-        if (this.current === '0' || this.current === 'Error') this.current = val;
-        else this.current += val;
-        this.update();
-      },
-      
-      operator(op) {
-        this.expr += this.current + ' ' + op + ' ';
-        this.current = '0';
-        this.update();
-      },
-      
-      setAngle(mode) {
-        this.angle = mode;
-        document.getElementById('radBtn').classList.toggle('active', mode === 'RAD');
-        document.getElementById('degBtn').classList.toggle('active', mode === 'DEG');
-        document.getElementById('gradBtn').classList.toggle('active', mode === 'GRAD');
-      },
-      
-      const toRad = (val) => {
-        if (this.angle === 'DEG') return val * Math.PI / 180;
-        if (this.angle === 'GRAD') return val * Math.PI / 200;
-        return val;
-      };
-      const fromRad = (val) => {
-        if (this.angle === 'DEG') return val * 180 / Math.PI;
-        if (this.angle === 'GRAD') return val * 200 / Math.PI;
-        return val;
-      };
-      
-      func(f) {
-        const val = parseFloat(this.current);
-        try {
-          let result;
-          switch(f) {
-            case 'pi': result = Math.PI; break;
-            case 'e': result = Math.E; break;
-            case 'sqrt': result = Math.sqrt(Math.abs(val)); break;
-            case 'cbrt': result = Math.cbrt(val); break;
-            case 'abs': result = Math.abs(val); break;
-            case 'pow': this.expr += this.current + ' ** '; this.current = ''; this.update(); return;
-            case 'fact': result = val >= 0 && Number.isInteger(val) ? (val > 170 ? 'Overflow' : factorial(val)) : 'Error'; break;
-            case 'log': result = val > 0 ? Math.log10(val) : 'Error'; break;
-            case 'ln': result = val > 0 ? Math.log(val) : 'Error'; break;
-            case 'sin': result = Math.sin(toRad(val)); break;
-            case 'cos': result = Math.cos(toRad(val)); break;
-            case 'tan': result = Math.tan(toRad(val)); break;
-            case 'asin': result = fromRad(Math.asin(val)); break;
-            case 'acos': result = fromRad(Math.acos(val)); break;
-            case 'atan': result = fromRad(Math.atan(val)); break;
-            default: return;
-          }
-          this.current = String(result);
-        } catch (e) {
-          this.current = 'Error';
-        }
-        this.update();
-      },
-      
       clear() {
         this.current = '0';
         this.expr = '';
@@ -665,7 +568,7 @@ const calc = {
         renderHistory(hist);
       },
       
-clearHistory() {
+      clearHistory() {
         if (confirm('Clear all history?')) {
           localStorage.removeItem('sciHistory');
           renderHistory([]);
@@ -695,29 +598,6 @@ clearHistory() {
         </div>
       `).join('');
     }
-    };
-
-    function factorial(n) {
-      if (n === 0 || n === 1) return 1;
-      let result = 1;
-      for (let i = 2; i <= n; i++) result *= i;
-      return result;
-    }
-
-    function renderHistory(hist) {
-      const el = document.getElementById('history');
-      if (!el) return;
-      if (hist.length === 0) {
-        el.innerHTML = '<div style="color: var(--text-muted); font-size: 0.8rem;">No calculations yet</div>';
-        return;
-      }
-      el.innerHTML = hist.slice(0, 10).map(item => `
-        <div class="history-item" onclick="recall('${item.result}')">
-          <div class="expr">${item.expr}</div>
-          <div class="result">= ${item.result}</div>
-        </div>
-      `).join('');
-    }
 
     function recall(val) {
       calc.current = val;
@@ -735,30 +615,6 @@ clearHistory() {
       if (e.key === 'Backspace') calc.backspace();
       e.preventDefault();
     });
-
-    function showSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
-    function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
-    function saveSettings() {
-      localStorage.setItem('defaultMode', document.getElementById('defaultMode').value);
-      localStorage.setItem('decimalPrecision', document.getElementById('decimalPrecision').value);
-      localStorage.setItem('defaultAngle', document.getElementById('defaultAngle').value);
-      localStorage.setItem('historyLimit', document.getElementById('historyLimit').value);
-      localStorage.setItem('soundEnabled', document.getElementById('soundEnabled').checked);
-      closeSettings();
-    }
-    function resetSettings() { if (confirm('Reset all settings?')) { localStorage.clear(); location.reload(); } }
   </script>
-  <div id="settingsModal" class="modal" style="display:none;">
-    <div class="modal-content">
-      <span class="modal-close" onclick="closeSettings()">&times;</span>
-      <h3>Settings</h3>
-      <div class="settings-group"><label>Default Mode</label><select id="defaultMode"><option value="basic">Basic</option><option value="scientific">Scientific</option><option value="graph">Graph</option></select></div>
-      <div class="settings-group"><label>Decimal Precision</label><input type="range" id="decimalPrecision" min="0" max="10" value="10"></div>
-      <div class="settings-group"><label>Default Angle</label><select id="defaultAngle"><option value="RAD">Radians</option><option value="DEG">Degrees</option><option value="GRAD">Gradians</option></select></div>
-      <div class="settings-group"><label>History Limit</label><input type="number" id="historyLimit" min="5" max="100" value="50"></div>
-      <div class="settings-group"><label><input type="checkbox" id="soundEnabled"> Enable sound</label></div>
-      <div class="settings-btns"><button onclick="saveSettings()">Save</button><button onclick="resetSettings()" class="secondary">Reset</button></div>
-    </div>
-  </div>
 </body>
 </html>

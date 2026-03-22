@@ -18,7 +18,7 @@
       <a href="scientific.html">Scientific</a>
       <a href="graph.html">Graph</a>
       <button class="theme-btn" onclick="toggleTheme()" aria-label="Toggle dark/light theme">◐</button>
-      <button class="theme-btn" onclick="showSettings()" aria-label="Open settings">⚙</button>
+      <a href="settings.html" class="theme-btn" aria-label="Settings">⚙</a>
     </nav>
   </header>
 
@@ -77,7 +77,7 @@
     <p>CalcLab — Built with precision</p>
   </footer>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+  <script>
     function toggleTheme() {
       const html = document.documentElement;
       if (html.getAttribute('data-theme') === 'dark') {
@@ -305,35 +305,6 @@
       if (e.key === 'Backspace') calc.backspace();
     });
 
-    function showSettings() {
-      document.getElementById('settingsModal').style.display = 'flex';
-    }
-    function closeSettings() {
-      document.getElementById('settingsModal').style.display = 'none';
-    }
-    function saveSettings() {
-      localStorage.setItem('defaultMode', document.getElementById('defaultMode').value);
-      localStorage.setItem('decimalPrecision', document.getElementById('decimalPrecision').value);
-      localStorage.setItem('defaultAngle', document.getElementById('defaultAngle').value);
-      localStorage.setItem('historyLimit', document.getElementById('historyLimit').value);
-      localStorage.setItem('soundEnabled', document.getElementById('soundEnabled').checked);
-      closeSettings();
-    }
-    function resetSettings() {
-      if (confirm('Reset all settings?')) { localStorage.clear(); location.reload(); }
-    }
   </script>
-  <div id="settingsModal" class="modal" style="display:none;">
-    <div class="modal-content">
-      <span class="modal-close" onclick="closeSettings()">&times;</span>
-      <h3>Settings</h3>
-      <div class="settings-group"><label>Default Mode</label><select id="defaultMode"><option value="basic">Basic</option><option value="scientific">Scientific</option><option value="graph">Graph</option></select></div>
-      <div class="settings-group"><label>Decimal Precision</label><input type="range" id="decimalPrecision" min="0" max="10" value="10"><span id="precVal">10</span></div>
-      <div class="settings-group"><label>Default Angle</label><select id="defaultAngle"><option value="RAD">Radians</option><option value="DEG">Degrees</option><option value="GRAD">Gradians</option></select></div>
-      <div class="settings-group"><label>History Limit</label><input type="number" id="historyLimit" min="5" max="100" value="50"></div>
-      <div class="settings-group"><label><input type="checkbox" id="soundEnabled"> Enable sound</label></div>
-      <div class="settings-btns"><button onclick="saveSettings()">Save</button><button onclick="resetSettings()" class="secondary">Reset</button></div>
-    </div>
-  </div>
 </body>
 </html>

@@ -54,7 +54,7 @@
       <a href="scientific.html">Scientific</a>
       <a href="graph.html">Graph</a>
       <button class="theme-btn" onclick="toggleTheme()">◐</button>
-      <button class="theme-btn" onclick="showSettings()" title="Settings">⚙</button>
+      <a href="settings.html" class="theme-btn" title="Settings">⚙</a>
     </nav>
   </header>
 
@@ -305,71 +305,7 @@
 
     loadHistory();
     initCurrency();
-
-    function showSettings() {
-      document.getElementById('settingsModal').style.display = 'flex';
-    }
-
-    function closeSettings() {
-      document.getElementById('settingsModal').style.display = 'none';
-    }
-
-    function saveSettings() {
-      localStorage.setItem('defaultMode', document.getElementById('defaultMode').value);
-      localStorage.setItem('decimalPrecision', document.getElementById('decimalPrecision').value);
-      localStorage.setItem('defaultAngle', document.getElementById('defaultAngle').value);
-      localStorage.setItem('historyLimit', document.getElementById('historyLimit').value);
-      localStorage.setItem('soundEnabled', document.getElementById('soundEnabled').checked);
-      closeSettings();
-      alert('Settings saved!');
-    }
-
-    function resetSettings() {
-      if (confirm('Reset all settings to default?')) {
-        localStorage.clear();
-        location.reload();
-      }
-    }
   </script>
-
-  <div id="settingsModal" class="modal" style="display:none;">
-    <div class="modal-content">
-      <span class="modal-close" onclick="closeSettings()">&times;</span>
-      <h3>Settings</h3>
-      <div class="settings-group">
-        <label>Default Mode</label>
-        <select id="defaultMode">
-          <option value="basic">Basic</option>
-          <option value="scientific">Scientific</option>
-          <option value="graph">Graph</option>
-        </select>
-      </div>
-      <div class="settings-group">
-        <label>Decimal Precision</label>
-        <input type="range" id="decimalPrecision" min="0" max="10" value="10">
-        <span id="precVal">10</span>
-      </div>
-      <div class="settings-group">
-        <label>Default Angle Unit</label>
-        <select id="defaultAngle">
-          <option value="RAD">Radians</option>
-          <option value="DEG">Degrees</option>
-          <option value="GRAD">Gradians</option>
-        </select>
-      </div>
-      <div class="settings-group">
-        <label>History Limit</label>
-        <input type="number" id="historyLimit" min="5" max="100" value="50">
-      </div>
-      <div class="settings-group">
-        <label><input type="checkbox" id="soundEnabled"> Enable click sounds</label>
-      </div>
-      <div class="settings-btns">
-        <button onclick="saveSettings()">Save</button>
-        <button onclick="resetSettings()" class="secondary">Reset All</button>
-      </div>
-    </div>
-  </div>
 
   <script>
     if ('serviceWorker' in navigator) {

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - CalcLab</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#B85C38">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .settings-page {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .settings-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .settings-card h2 {
+      font-family: var(--mono);
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .setting-item:last-child { border-bottom: none; }
+    .setting-item label {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+    }
+    .setting-item select, .setting-item input[type="number"], .setting-item input[type="range"] {
+      padding: 0.4rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--surface);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.8rem;
+    }
+    .setting-item input[type="range"] { width: 100px; }
+    .setting-item input[type="checkbox"] { width: 18px; height: 18px; }
+    .setting-item .setting-desc {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+    .settings-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .settings-actions button {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      transition: all 0.15s ease-out;
+    }
+    .settings-actions .save-btn {
+      background: var(--accent);
+      color: #fff;
+    }
+    .settings-actions .save-btn:hover { background: #c96a45; }
+    .settings-actions .reset-btn {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .settings-actions .reset-btn:hover { background: var(--bg); }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-bottom: 1rem;
+      padding: 0.4rem 0;
+    }
+    .back-link:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo">CalcLab</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="basic.html">Basic</a>
+      <a href="scientific.html">Scientific</a>
+      <a href="graph.html">Graph</a>
+      <button class="theme-btn" onclick="toggleTheme()">◐</button>
+      <a href="settings.html" class="active">⚙</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="settings-page">
+      <a href="index.html" class="back-link">← Back to Home</a>
+      
+      <div class="settings-card">
+        <h2>Appearance</h2>
+        <div class="setting-item">
+          <div>
+            <label>Theme</label>
+            <div class="setting-desc">Choose your preferred color scheme</div>
+          </div>
+          <select id="themeSelect" onchange="updateTheme()">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="system">System</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h2>Calculator Defaults</h2>
+        <div class="setting-item">
+          <div>
+            <label>Default Mode</label>
+            <div class="setting-desc">Which calculator opens by default</div>
+          </div>
+          <select id="defaultMode">
+            <option value="basic">Basic</option>
+            <option value="scientific">Scientific</option>
+            <option value="graph">Graph</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <div>
+            <label>Angle Unit</label>
+            <div class="setting-desc">For trigonometric calculations</div>
+          </div>
+          <select id="defaultAngle">
+            <option value="DEG">Degrees</option>
+            <option value="RAD">Radians</option>
+            <option value="GRAD">Gradians</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <div>
+            <label>Decimal Precision</label>
+            <div class="setting-desc">Number of decimal places shown</div>
+          </div>
+          <input type="range" id="decimalPrecision" min="0" max="10" value="10" oninput="updatePrecisionDisplay()">
+          <span id="precVal" style="font-family:var(--mono);margin-left:0.5rem;">10</span>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h2>History & Data</h2>
+        <div class="setting-item">
+          <div>
+            <label>History Limit</label>
+            <div class="setting-desc">Maximum calculations to remember</div>
+          </div>
+          <input type="number" id="historyLimit" min="5" max="100" value="50" style="width:70px;">
+        </div>
+        <div class="setting-item">
+          <div>
+            <label>Clear All Data</label>
+            <div class="setting-desc">Clear history, memory, and settings</div>
+          </div>
+          <button onclick="clearAllData()" style="padding:0.4rem 0.8rem;background:#C25450;color:#fff;border:none;border-radius:4px;cursor:pointer;font-family:var(--mono);font-size:0.75rem;">Clear All</button>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h2>Sound & Feedback</h2>
+        <div class="setting-item">
+          <div>
+            <label>Click Sounds</label>
+            <div class="setting-desc">Play sound on button press</div>
+          </div>
+          <input type="checkbox" id="soundEnabled">
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h2>PWA & Offline</h2>
+        <div class="setting-item">
+          <div>
+            <label>Install App</label>
+            <div class="setting-desc">Add CalcLab to your home screen</div>
+          </div>
+          <button onclick="installApp()" id="installBtn" style="display:none;padding:0.4rem 0.8rem;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;font-family:var(--mono);font-size:0.75rem;">Install</button>
+        </div>
+        <div class="setting-item">
+          <div>
+            <label>Service Worker</label>
+            <div class="setting-desc" id="swStatus">Checking...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-actions">
+        <button class="reset-btn" onclick="resetSettings()">Reset to Defaults</button>
+        <button class="save-btn" onclick="saveSettings()">Save Settings</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>CalcLab — Built with precision</p>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      if (html.getAttribute('data-theme') === 'dark') {
+        html.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+      }
+      updateThemeSelect();
+    }
+
+    function updateTheme() {
+      const val = document.getElementById('themeSelect').value;
+      if (val === 'system') {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.removeItem('theme');
+      } else {
+        document.documentElement.setAttribute('data-theme', val);
+        localStorage.setItem('theme', val);
+      }
+    }
+
+    function updateThemeSelect() {
+      const saved = localStorage.getItem('theme') || 'system';
+      document.getElementById('themeSelect').value = saved;
+    }
+
+    function updatePrecisionDisplay() {
+      document.getElementById('precVal').textContent = document.getElementById('decimalPrecision').value;
+    }
+
+    function loadSettings() {
+      updateThemeSelect();
+      document.getElementById('defaultMode').value = localStorage.getItem('defaultMode') || 'basic';
+      document.getElementById('defaultAngle').value = localStorage.getItem('defaultAngle') || 'DEG';
+      document.getElementById('decimalPrecision').value = parseInt(localStorage.getItem('decimalPrecision') || '10');
+      updatePrecisionDisplay();
+      document.getElementById('historyLimit').value = parseInt(localStorage.getItem('historyLimit') || '50');
+      document.getElementById('soundEnabled').checked = localStorage.getItem('soundEnabled') === 'true';
+      
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(() => {
+          document.getElementById('swStatus').textContent = 'Active - App works offline';
+          document.getElementById('swStatus').style.color = 'var(--accent-secondary)';
+        }).catch(() => {
+          document.getElementById('swStatus').textContent = 'Not registered';
+        });
+      } else {
+        document.getElementById('swStatus').textContent = 'Not supported in this browser';
+      }
+    }
+
+    function saveSettings() {
+      localStorage.setItem('defaultMode', document.getElementById('defaultMode').value);
+      localStorage.setItem('decimalPrecision', document.getElementById('decimalPrecision').value);
+      localStorage.setItem('defaultAngle', document.getElementById('defaultAngle').value);
+      localStorage.setItem('historyLimit', document.getElementById('historyLimit').value);
+      localStorage.setItem('soundEnabled', document.getElementById('soundEnabled').checked);
+      localStorage.setItem('theme', document.getElementById('themeSelect').value);
+      showNotification('Settings saved!');
+    }
+
+    function resetSettings() {
+      if (confirm('Reset all settings to defaults? This will clear your history and preferences.')) {
+        localStorage.removeItem('defaultMode');
+        localStorage.removeItem('decimalPrecision');
+        localStorage.removeItem('defaultAngle');
+        localStorage.removeItem('historyLimit');
+        localStorage.removeItem('soundEnabled');
+        localStorage.removeItem('theme');
+        loadSettings();
+        showNotification('Settings reset to defaults');
+      }
+    }
+
+    function clearAllData() {
+      if (confirm('This will clear all your data including history and memory. Continue?')) {
+        localStorage.removeItem('basicHistory');
+        localStorage.removeItem('sciHistory');
+        localStorage.removeItem('basicMemory');
+        localStorage.removeItem('sciMemory');
+        localStorage.removeItem('graphState');
+        showNotification('All data cleared');
+      }
+    }
+
+    function showNotification(msg) {
+      const n = document.createElement('div');
+      n.textContent = msg;
+      n.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:0.6rem 1.2rem;border-radius:6px;font-family:var(--mono);font-size:0.8rem;z-index:1000;animation:fadeIn 0.2s';
+      document.body.appendChild(n);
+      setTimeout(() => { n.style.opacity = '0'; n.style.transition = 'opacity 0.3s'; setTimeout(() => n.remove(), 300); }, 2000);
+    }
+
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('installBtn').style.display = 'block';
+    });
+
+    function installApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((c) => {
+          if (c.outcome === 'accepted') showNotification('App installed!');
+          deferredPrompt = null;
+        });
+      }
+    }
+
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else if (!localStorage.getItem('theme')) {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    }
+
+    loadSettings();
+
+    const style = document.createElement('style');
+    style.textContent = '@keyframes fadeIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }';
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

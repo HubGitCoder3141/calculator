@@ -239,7 +239,7 @@
       <a href="scientific.html">Scientific</a>
       <a href="graph.html" class="active">Graph</a>
       <button class="theme-btn" onclick="toggleTheme()">◐</button>
-      <button class="theme-btn" onclick="showSettings()" title="Settings">⚙</button>
+      <a href="settings.html" class="theme-btn" title="Settings">⚙</a>
     </nav>
   </header>
 
@@ -279,7 +279,7 @@
           <button onclick="toggleGrid()" id="gridBtn">Grid</button>
           <button onclick="toggleTrace()" id="traceBtn">Trace</button>
           <button onclick="findRoots()">Roots</button>
-          <button onclick="find extrema()">Extr</button>
+          <button onclick="findExtrema()">Extr</button>
           <button onclick="findIntersection()">∩</button>
           <button onclick="showIntegral()">∫</button>
           <button onclick="showTangent()">Tan</button>
@@ -369,7 +369,7 @@
             <input type="checkbox" ${f.active ? 'checked' : ''} onchange="toggleFunc(${i})">
             <span class="func-color" style="background:${colors[i]}"></span>
             <span style="font-family:var(--mono);font-size:0.8rem;">Y${i+1}=</span>
-            <input type="text" value="${f.expr}" placeholder="X" oninput="updateFunc(${i}, this.value)" onkeypress="if(event.key==='Enter')drawGraph()">
+            <input type="text" value="${f.expr}" placeholder="X" oninput="updateFunc(${i}, this.value)" onkeydown="if(event.key==='Enter'){drawGraph();event.preventDefault()}">
           </div>
         `).join('');
       } else if (mode === 'param') {
@@ -379,9 +379,9 @@
             <input type="checkbox" ${f.active ? 'checked' : ''} onchange="toggleParam(${i})">
             <span class="func-color" style="background:${colors[i]}"></span>
             <span style="font-family:var(--mono);font-size:0.8rem;">X${i+1}=</span>
-            <input type="text" value="${f.x}" placeholder="T" style="width:80px" oninput="updateParamX(${i}, this.value)">
+            <input type="text" value="${f.x}" placeholder="T" style="width:80px" oninput="updateParamX(${i}, this.value)" onkeydown="if(event.key==='Enter'){drawGraph();event.preventDefault()}">
             <span style="font-family:var(--mono);font-size:0.8rem;">Y${i+1}=</span>
-            <input type="text" value="${f.y}" placeholder="T" style="width:80px" oninput="updateParamY(${i}, this.value)">
+            <input type="text" value="${f.y}" placeholder="T" style="width:80px" oninput="updateParamY(${i}, this.value)" onkeydown="if(event.key==='Enter'){drawGraph();event.preventDefault()}">
           </div>
         `).join('');
       } else if (mode === 'polar') {
@@ -391,7 +391,7 @@
             <input type="checkbox" ${f.active ? 'checked' : ''} onchange="togglePolar(${i})">
             <span class="func-color" style="background:${colors[i]}"></span>
             <span style="font-family:var(--mono);font-size:0.8rem;">r${i+1}=</span>
-            <input type="text" value="${f.expr}" placeholder="θ" oninput="updatePolar(${i}, this.value)">
+            <input type="text" value="${f.expr}" placeholder="θ" oninput="updatePolar(${i}, this.value)" onkeydown="if(event.key==='Enter'){drawGraph();event.preventDefault()}">
           </div>
         `).join('');
       } else if (mode === 'ineq') {
@@ -406,14 +406,14 @@
               <option value="<" ${f.op === '<' ? 'selected' : ''}><</option>
               <option value="<=" ${f.op === '<=' ? 'selected' : ''}><=</option>
             </select>
-            <input type="text" value="${f.expr}" placeholder="X" oninput="updateIneq(${i}, this.value)" onkeypress="if(event.key==='Enter')drawGraph()">
+            <input type="text" value="${f.expr}" placeholder="X" oninput="updateIneq(${i}, this.value)" onkeydown="if(event.key==='Enter'){drawGraph();event.preventDefault()}">
           </div>
         `).join('');
       }
     }
 
     function toggleIneq(i) { ineqFuncs[i].active = !ineqFuncs[i].active; generateFuncInputs(); drawGraph(); saveState(); }
-    function updateIneq(i, v) { ineqFuncs[i].expr = v; saveState(); }
+    function updateIneq(i, v) { ineqFuncs[i].expr = v; debounceDraw(); saveState(); }
     function updateIneqOp(i, op) { ineqFuncs[i].op = op; generateFuncInputs(); drawGraph(); saveState(); }
 
     function toggleFunc(i) { functions[i].active = !functions[i].active; generateFuncInputs(); drawGraph(); saveState(); }
@@ -429,10 +429,10 @@
       drawTimeout = setTimeout(drawGraph, 100);
     }
     function toggleParam(i) { paramFuncs[i].active = !paramFuncs[i].active; generateFuncInputs(); drawGraph(); saveState(); }
-    function updateParamX(i, v) { paramFuncs[i].x = v; saveState(); }
-    function updateParamY(i, v) { paramFuncs[i].y = v; saveState(); }
+    function updateParamX(i, v) { paramFuncs[i].x = v; debounceDraw(); saveState(); }
+    function updateParamY(i, v) { paramFuncs[i].y = v; debounceDraw(); saveState(); }
     function togglePolar(i) { polarFuncs[i].active = !polarFuncs[i].active; generateFuncInputs(); drawGraph(); saveState(); }
-    function updatePolar(i, v) { polarFuncs[i].expr = v; saveState(); }
+    function updatePolar(i, v) { polarFuncs[i].expr = v; debounceDraw(); saveState(); }
 
     function parseMath(expr) {
       if (!expr) return null;
@@ -1097,30 +1097,6 @@ function setZoom(type) {
         updateAxisInputs();
       } catch (e) {}
     }
-
-    function showSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
-    function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
-    function saveSettings() {
-      localStorage.setItem('defaultMode', document.getElementById('defaultMode').value);
-      localStorage.setItem('decimalPrecision', document.getElementById('decimalPrecision').value);
-      localStorage.setItem('defaultAngle', document.getElementById('defaultAngle').value);
-      localStorage.setItem('historyLimit', document.getElementById('historyLimit').value);
-      localStorage.setItem('soundEnabled', document.getElementById('soundEnabled').checked);
-      closeSettings();
-    }
-    function resetSettings() { if (confirm('Reset all settings?')) { localStorage.clear(); location.reload(); } }
   </script>
-  <div id="settingsModal" class="modal" style="display:none;">
-    <div class="modal-content">
-      <span class="modal-close" onclick="closeSettings()">&times;</span>
-      <h3>Settings</h3>
-      <div class="settings-group"><label>Default Mode</label><select id="defaultMode"><option value="basic">Basic</option><option value="scientific">Scientific</option><option value="graph">Graph</option></select></div>
-      <div class="settings-group"><label>Decimal Precision</label><input type="range" id="decimalPrecision" min="0" max="10" value="10"></div>
-      <div class="settings-group"><label>Default Angle</label><select id="defaultAngle"><option value="RAD">Radians</option><option value="DEG">Degrees</option><option value="GRAD">Gradians</option></select></div>
-      <div class="settings-group"><label>History Limit</label><input type="number" id="historyLimit" min="5" max="100" value="50"></div>
-      <div class="settings-group"><label><input type="checkbox" id="soundEnabled"> Enable sound</label></div>
-      <div class="settings-btns"><button onclick="saveSettings()">Save</button><button onclick="resetSettings()" class="secondary">Reset</button></div>
-    </div>
-  </div>
 </body>
 </html>
