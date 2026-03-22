@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basic Calculator - CalcLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo">CalcLab</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="basic.html" class="active">Basic</a>
+      <a href="scientific.html">Scientific</a>
+      <a href="graph.html">Graph</a>
+      <button class="theme-btn" onclick="toggleTheme()">◐ Theme</button>
+    </nav>
+  </header>
+
+  <main class="calc-page">
+    <div class="calc-header">
+      <h1>Basic Calculator</h1>
+      <p>Simple arithmetic operations</p>
+    </div>
+    <div class="calculator-container">
+      <div class="calc-wrapper">
+        <div class="calc-display">
+          <div class="expression" id="expr"></div>
+          <div class="result" id="result">0</div>
+        </div>
+        <div class="calc-buttons">
+          <button class="calc-btn clear" onclick="calc.clear()">C</button>
+          <button class="calc-btn" onclick="calc.backspace()">⌫</button>
+          <button class="calc-btn" onclick="calc.operator('%')">%</button>
+          <button class="calc-btn operator" onclick="calc.operator('/')">÷</button>
+          <button class="calc-btn" onclick="calc.number('7')">7</button>
+          <button class="calc-btn" onclick="calc.number('8')">8</button>
+          <button class="calc-btn" onclick="calc.number('9')">9</button>
+          <button class="calc-btn operator" onclick="calc.operator('*')">×</button>
+          <button class="calc-btn" onclick="calc.number('4')">4</button>
+          <button class="calc-btn" onclick="calc.number('5')">5</button>
+          <button class="calc-btn" onclick="calc.number('6')">6</button>
+          <button class="calc-btn operator" onclick="calc.operator('-')">−</button>
+          <button class="calc-btn" onclick="calc.number('1')">1</button>
+          <button class="calc-btn" onclick="calc.number('2')">2</button>
+          <button class="calc-btn" onclick="calc.number('3')">3</button>
+          <button class="calc-btn operator" onclick="calc.operator('+')">+</button>
+          <button class="calc-btn" onclick="calc.number('0')">0</button>
+          <button class="calc-btn" onclick="calc.decimal()">.</button>
+          <button class="calc-btn" onclick="calc.toggleSign()">±</button>
+          <button class="calc-btn equals" onclick="calc.equals()">=</button>
+        </div>
+      </div>
+      <div class="history-panel">
+        <h3>History <button onclick="calc.clearHistory()">Clear</button></h3>
+        <div id="history"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>CalcLab — Built with precision</p>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      if (html.getAttribute('data-theme') === 'dark') {
+        html.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+
+    const calc = {
+      current: '0',
+      expr: '',
+      
+      update() {
+        document.getElementById('result').textContent = this.current;
+        document.getElementById('expr').textContent = this.expr;
+      },
+      
+      number(n) {
+        if (this.current === '0' || this.current === 'Error') this.current = n;
+        else if (this.current.length < 15) this.current += n;
+        this.update();
+      },
+      
+      decimal() {
+        if (!this.current.includes('.')) this.current += '.';
+        this.update();
+      },
+      
+      operator(op) {
+        this.expr += this.current + ' ' + op + ' ';
+        this.current = '0';
+        this.update();
+      },
+      
+      clear() {
+        this.current = '0';
+        this.expr = '';
+        this.update();
+      },
+      
+      backspace() {
+        if (this.current.length === 1 || this.current === 'Error') this.current = '0';
+        else this.current = this.current.slice(0, -1);
+        this.update();
+      },
+      
+      toggleSign() {
+        if (this.current !== '0' && this.current !== 'Error') {
+          this.current = this.current.startsWith('-') ? this.current.slice(1) : '-' + this.current;
+        }
+        this.update();
+      },
+      
+      equals() {
+        try {
+          const fullExpr = this.expr + this.current;
+          const result = Function('"use strict";return (' + fullExpr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-') + ')')();
+          if (!isFinite(result)) throw new Error();
+          this.addHistory(fullExpr, result);
+          this.current = String(Math.round(result * 1e10) / 1e10);
+          this.expr = '';
+        } catch (e) {
+          this.current = 'Error';
+        }
+        this.update();
+      },
+      
+      addHistory(expr, result) {
+        const hist = JSON.parse(localStorage.getItem('basicHistory') || '[]');
+        hist.unshift({ expr, result: String(result), time: Date.now() });
+        if (hist.length > 20) hist.pop();
+        localStorage.setItem('basicHistory', JSON.stringify(hist));
+        renderHistory(hist);
+      },
+      
+      clearHistory() {
+        localStorage.removeItem('basicHistory');
+        renderHistory([]);
+      }
+    };
+
+    function renderHistory(hist) {
+      const el = document.getElementById('history');
+      if (!el) return;
+      if (hist.length === 0) {
+        el.innerHTML = '<div style="color: var(--text-muted); font-size: 0.8rem;">No calculations yet</div>';
+        return;
+      }
+      el.innerHTML = hist.slice(0, 10).map(item => `
+        <div class="history-item" onclick="recall('${item.result}')">
+          <div class="expr">${item.expr}</div>
+          <div class="result">= ${item.result}</div>
+        </div>
+      `).join('');
+    }
+
+    function recall(val) {
+      calc.current = val;
+      calc.update();
+    }
+
+    renderHistory(JSON.parse(localStorage.getItem('basicHistory') || '[]'));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key >= '0' && e.key <= '9') calc.number(e.key);
+      if (e.key === '.') calc.decimal();
+      if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') calc.operator(e.key);
+      if (e.key === 'Enter' || e.key === '=') calc.equals();
+      if (e.key === 'Escape') calc.clear();
+      if (e.key === 'Backspace') calc.backspace();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graph Calculator - CalcLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .graph-page {
+      padding: 3rem 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .graph-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .graph-header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.3rem;
+    }
+    .graph-header p {
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo">CalcLab</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="basic.html">Basic</a>
+      <a href="scientific.html">Scientific</a>
+      <a href="graph.html" class="active">Graph</a>
+      <button class="theme-btn" onclick="toggleTheme()">◐ Theme</button>
+    </nav>
+  </header>
+
+  <main class="graph-page">
+    <div class="graph-header">
+      <h1>Graph Calculator</h1>
+      <p>Plot mathematical functions</p>
+    </div>
+    <div class="graph-container">
+      <div class="graph-input">
+        <input type="text" id="graphFunction" placeholder="e.g., Math.sin(x), x*x, 2*x+1" value="Math.sin(x)">
+        <button onclick="drawGraph()">Plot</button>
+      </div>
+      <canvas id="graphCanvas" width="600" height="350"></canvas>
+      <div class="graph-examples">
+        <span>Try:</span>
+        <button onclick="setGraph('x*x')">x²</button>
+        <button onclick="setGraph('x*x*x')">x³</button>
+        <button onclick="setGraph('Math.sin(x)')">sin(x)</button>
+        <button onclick="setGraph('Math.cos(x)')">cos(x)</button>
+        <button onclick="setGraph('Math.tan(x)')">tan(x)</button>
+        <button onclick="setGraph('2*x+1')">2x+1</button>
+        <button onclick="setGraph('1/x')">1/x</button>
+        <button onclick="setGraph('Math.sqrt(x)')">√x</button>
+        <button onclick="setGraph('Math.abs(x)')">|x|</button>
+        <button onclick="setGraph('Math.log(x)')">ln(x)</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>CalcLab — Built with precision</p>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      if (html.getAttribute('data-theme') === 'dark') {
+        html.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+      }
+      drawGraph();
+    }
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+
+    function setGraph(expr) {
+      document.getElementById('graphFunction').value = expr;
+      drawGraph();
+    }
+
+    function drawGraph() {
+      const canvas = document.getElementById('graphCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const input = document.getElementById('graphFunction');
+      if (!input) return;
+      const expr = input.value || 'Math.sin(x)';
+      
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const bg = isDark ? '#252525' : '#ebe5d9';
+      const fg = isDark ? '#f5f0e8' : '#1a1a1a';
+      const accent = '#e63946';
+      const gridCol = isDark ? '#3a3a3a' : '#d0cbc0';
+      
+      canvas.width = 600;
+      canvas.height = 350;
+      
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      const w = canvas.width;
+      const h = canvas.height;
+      const scale = 30;
+      const centerX = w / 2;
+      const centerY = h / 2;
+      
+      ctx.strokeStyle = gridCol;
+      ctx.lineWidth = 1;
+      for (let x = centerX % scale; x < w; x += scale) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+      for (let y = centerY % scale; y < h; y += scale) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+      
+      ctx.strokeStyle = fg;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, centerY); ctx.lineTo(w, centerY);
+      ctx.moveTo(centerX, 0); ctx.lineTo(centerX, h);
+      ctx.stroke();
+      
+      try {
+        const func = new Function('x', 'return ' + expr);
+        
+        ctx.strokeStyle = accent;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        
+        let started = false;
+        for (let px = 0; px < w; px++) {
+          const x = (px - centerX) / scale;
+          let y;
+          try { y = func(x); } catch (e) { started = false; continue; }
+          
+          if (isFinite(y) && Math.abs(y) < 50) {
+            const py = centerY - y * scale;
+            if (py >= -10 && py <= h + 10) {
+              if (!started) { ctx.moveTo(px, py); started = true; }
+              else ctx.lineTo(px, py);
+            } else { started = false; }
+          } else { started = false; }
+        }
+        ctx.stroke();
+      } catch (e) {
+        ctx.fillStyle = accent;
+        ctx.font = '14px monospace';
+        ctx.fillText('Invalid: ' + expr, 10, 25);
+      }
+    }
+
+    window.addEventListener('load', drawGraph);
+  </script>
+</body>
+</html>

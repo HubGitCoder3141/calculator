@@ -7,98 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
   <style>
-    :root {
-      --bg: #f5f0e8;
-      --bg-secondary: #ebe5d9;
-      --text: #1a1a1a;
-      --text-muted: #5a5a5a;
-      --accent: #e63946;
-      --accent-secondary: #2a9d8f;
-      --border: #2a2a2a;
-      --card-bg: #ffffff;
-      --shadow: 4px 4px 0 #2a2a2a;
-      --shadow-hover: 2px 2px 0 #2a2a2a;
-      --mono: 'Space Mono', monospace;
-      --serif: 'Crimson Pro', serif;
-    }
-
-    [data-theme="dark"] {
-      --bg: #1a1a1a;
-      --bg-secondary: #252525;
-      --text: #f5f0e8;
-      --text-muted: #a0a0a0;
-      --card-bg: #2a2a2a;
-      --shadow: 4px 4px 0 #f5f0e8;
-      --shadow-hover: 2px 2px 0 #f5f0e8;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--serif);
-      min-height: 100vh;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    /* Header */
-    header {
-      background: var(--bg-secondary);
-      border-bottom: 3px solid var(--border);
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .logo {
-      font-family: var(--mono);
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    nav {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    nav button {
-      font-family: var(--mono);
-      font-size: 0.85rem;
-      color: var(--text);
-      background: transparent;
-      border: 2px solid transparent;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      border-radius: 6px;
-      transition: all 0.2s;
-    }
-
-    nav button:hover {
-      background: var(--bg);
-      border-color: var(--border);
-    }
-
-    nav button.active {
-      background: var(--border);
-      color: var(--bg);
-    }
-
-    .theme-btn {
-      background: var(--card-bg) !important;
-      border: 2px solid var(--border) !important;
-      margin-left: 0.5rem;
-    }
-
-    /* Hero Section */
     .hero {
       padding: 6rem 2rem;
       text-align: center;
@@ -108,7 +18,6 @@
         var(--bg);
       position: relative;
     }
-
     .hero::before {
       content: '';
       position: absolute;
@@ -118,31 +27,26 @@
       opacity: 0.04;
       pointer-events: none;
     }
-
     .hero h1 {
       font-size: clamp(2.5rem, 8vw, 4.5rem);
       font-weight: 700;
       line-height: 1.1;
       margin-bottom: 1.5rem;
     }
-
     .hero h1 span { color: var(--accent); }
-
     .hero p {
       font-size: 1.2rem;
       color: var(--text-muted);
       max-width: 550px;
       margin: 0 auto 2rem;
     }
-
     .cta {
       display: inline-flex;
       gap: 1rem;
       flex-wrap: wrap;
       justify-content: center;
     }
-
-    .cta button {
+    .cta a, .cta button {
       font-family: var(--mono);
       font-size: 1rem;
       padding: 1rem 2rem;
@@ -151,38 +55,32 @@
       border: 3px solid var(--border);
       box-shadow: var(--shadow);
       cursor: pointer;
+      text-decoration: none;
       transition: all 0.2s;
     }
-
-    .cta button:hover {
+    .cta a:hover, .cta button:hover {
       transform: translate(2px, 2px);
       box-shadow: var(--shadow-hover);
     }
-
-    .cta button.secondary {
+    .cta .secondary {
       background: var(--card-bg);
       color: var(--text);
     }
-
-    /* Tools Grid */
     .tools {
       padding: 4rem 2rem;
       max-width: 1100px;
       margin: 0 auto;
     }
-
     .tools h2 {
       font-size: 2rem;
       margin-bottom: 2rem;
       text-align: center;
     }
-
     .tools-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.5rem;
     }
-
     .tool-card {
       background: var(--card-bg);
       border: 3px solid var(--border);
@@ -190,33 +88,28 @@
       box-shadow: var(--shadow);
       transition: all 0.2s;
       cursor: pointer;
+      text-decoration: none;
+      color: inherit;
     }
-
     .tool-card:hover {
       transform: translate(4px, 4px);
       box-shadow: var(--shadow-hover);
     }
-
     .tool-card h3 {
       font-family: var(--mono);
       font-size: 1.1rem;
       margin-bottom: 0.5rem;
     }
-
     .tool-card p {
       color: var(--text-muted);
       font-size: 0.95rem;
-      line-height: 1.5;
     }
-
-    /* Features */
     .features {
       padding: 3rem 2rem;
       background: var(--bg-secondary);
       border-top: 3px solid var(--border);
       border-bottom: 3px solid var(--border);
     }
-
     .features-grid {
       max-width: 1000px;
       margin: 0 auto;
@@ -225,342 +118,60 @@
       gap: 2rem;
       text-align: center;
     }
-
     .feature-icon {
       font-size: 2rem;
       margin-bottom: 0.5rem;
     }
-
     .feature h4 {
       font-family: var(--mono);
       margin-bottom: 0.3rem;
     }
-
     .feature p {
       color: var(--text-muted);
       font-size: 0.9rem;
     }
-
-    /* Footer */
-    footer {
-      padding: 2rem;
-      text-align: center;
-      font-family: var(--mono);
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    /* Pages */
-    .page {
-      display: none;
-      padding: 2rem;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .page.active { display: block; }
-
-    .page-header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    .page-header h1 {
-      font-size: 2rem;
-      margin-bottom: 0.3rem;
-    }
-
-    .page-header p { color: var(--text-muted); }
-
-    .page-header .mode-toggle {
-      display: inline-block;
-      background: var(--card-bg);
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      padding: 0.3rem;
-      margin-top: 1rem;
-    }
-
-    .mode-toggle button {
-      font-family: var(--mono);
-      font-size: 0.8rem;
-      padding: 0.4rem 0.8rem;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      border-radius: 4px;
-      color: var(--text-muted);
-    }
-
-    .mode-toggle button.active {
-      background: var(--border);
-      color: var(--bg);
-    }
-
-    /* Calculator Container */
-    .calculator-container {
-      display: flex;
-      gap: 1.5rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .calc-wrapper {
-      background: var(--card-bg);
-      border: 3px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem;
-      box-shadow: var(--shadow);
-    }
-
-    .calc-display {
-      background: var(--bg-secondary);
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      text-align: right;
-      min-width: 260px;
-    }
-
-    .calc-display .expression {
-      font-family: var(--mono);
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      min-height: 1.1em;
-      word-break: break-all;
-    }
-
-    .calc-display .result {
-      font-family: var(--mono);
-      font-size: 1.8rem;
-      font-weight: 700;
-      word-break: break-all;
-    }
-
-    .calc-buttons.scientific {
-      grid-template-columns: repeat(5, 1fr);
-      max-width: 320px;
-    }
-
-    .calc-buttons {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.4rem;
-      max-width: 320px;
-    }
-
-    .calc-btn {
-      font-family: var(--mono);
-      font-size: 1rem;
-      padding: 0.8rem 0.5rem;
-      background: var(--bg);
-      border: 2px solid var(--border);
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.1s;
-    }
-
-    .calc-btn:hover { background: var(--bg-secondary); }
-    .calc-btn:active { transform: scale(0.95); }
-
-    .calc-btn.operator { background: var(--text); color: var(--bg); }
-    .calc-btn.equals { background: var(--accent-secondary); color: #fff; }
-    .calc-btn.clear { background: var(--accent); color: #fff; }
-    .calc-btn.func { 
-      background: rgba(230, 57, 70, 0.1); 
-      color: var(--accent);
-      font-size: 0.85rem;
-    }
-
-    /* History */
-    .history-panel {
-      background: var(--card-bg);
-      border: 3px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem;
-      width: 240px;
-      max-height: 400px;
-      overflow-y: auto;
-    }
-
-    .history-panel h3 {
-      font-family: var(--mono);
-      font-size: 0.9rem;
-      margin-bottom: 0.75rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .history-panel h3 button {
-      font-size: 0.7rem;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
-
-    .history-panel h3 button:hover { color: var(--accent); }
-
-    .history-item {
-      padding: 0.5rem;
-      border: 2px solid var(--border);
-      border-radius: 4px;
-      margin-bottom: 0.4rem;
-      cursor: pointer;
-      background: var(--bg);
-    }
-
-    .history-item:hover { background: var(--bg-secondary); }
-
-    .history-item .expr {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      color: var(--text-muted);
-    }
-
-    .history-item .result {
-      font-family: var(--mono);
-      font-size: 0.95rem;
-      font-weight: 700;
-    }
-
-    /* Graph */
-    .graph-container {
-      background: var(--card-bg);
-      border: 3px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem;
-      box-shadow: var(--shadow);
-    }
-
-    .graph-input {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .graph-input input {
-      font-family: var(--mono);
-      font-size: 0.95rem;
-      padding: 0.6rem 0.8rem;
-      border: 2px solid var(--border);
-      border-radius: 6px;
-      flex: 1;
-      min-width: 200px;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .graph-input button {
-      font-family: var(--mono);
-      font-size: 0.9rem;
-      padding: 0.6rem 1.2rem;
-      background: var(--accent);
-      color: #fff;
-      border: 2px solid var(--border);
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-#graphCanvas {
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      background: var(--bg-secondary);
-      width: 100%;
-      max-width: 600px;
-      height: 350px;
-      display: block;
-    }
-
-    /* Graph */
-    .graph-container {
-      background: var(--card-bg);
-      border: 3px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem;
-      box-shadow: var(--shadow);
-      max-width: 640px;
-    }
-
-    .graph-examples {
-      margin-top: 1rem;
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .graph-examples span {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .graph-examples button {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      padding: 0.3rem 0.6rem;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      cursor: pointer;
-      color: var(--text);
-    }
-
     @media (max-width: 768px) {
-      header {
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1rem;
-      }
-      nav { flex-wrap: wrap; justify-content: center; }
       .hero { padding: 3rem 1rem; }
-      .calc-display { min-width: 100%; }
-      .history-panel { width: 100%; }
     }
   </style>
 </head>
 <body>
   <header>
-    <a href="#" class="logo" onclick="showPage('home')">CalcLab</a>
+    <a href="index.html" class="logo">CalcLab</a>
     <nav>
-      <button class="active" onclick="showPage('home')">Home</button>
-      <button onclick="showPage('basic')">Basic</button>
-      <button onclick="showPage('scientific')">Scientific</button>
-      <button onclick="showPage('graph')">Graph</button>
+      <a href="index.html" class="active">Home</a>
+      <a href="basic.html">Basic</a>
+      <a href="scientific.html">Scientific</a>
+      <a href="graph.html">Graph</a>
       <button class="theme-btn" onclick="toggleTheme()">◐ Theme</button>
     </nav>
   </header>
 
-  <!-- Home -->
-  <div id="home" class="page active">
+  <main>
     <section class="hero">
       <h1>Calculate with<br><span>Precision</span></h1>
-      <p>A collection of powerful calculation tools. Basic arithmetic, advanced scientific functions, and interactive graphs.</p>
+      <p>A collection of powerful calculation tools. Basic arithmetic, scientific functions, and interactive graphs.</p>
       <div class="cta">
-        <button onclick="showPage('basic')">Start Calculating →</button>
-        <button class="secondary" onclick="showPage('graph')">Try Graph</button>
+        <a href="basic.html">Start Calculating →</a>
+        <a href="graph.html" class="secondary">Try Graph</a>
       </div>
     </section>
 
     <section class="tools">
       <h2>Tools</h2>
       <div class="tools-grid">
-        <div class="tool-card" onclick="showPage('basic')">
+        <a href="basic.html" class="tool-card">
           <h3>Basic Calculator</h3>
-          <p>Simple arithmetic for everyday calculations. Add, subtract, multiply, divide with a clean interface.</p>
-        </div>
-        <div class="tool-card" onclick="showPage('scientific')">
+          <p>Simple arithmetic for everyday calculations. Add, subtract, multiply, divide.</p>
+        </a>
+        <a href="scientific.html" class="tool-card">
           <h3>Scientific Calculator</h3>
-          <p>Trigonometry, logarithms, exponents, and more. Perfect for students and professionals.</p>
-        </div>
-        <div class="tool-card" onclick="showPage('graph')">
+          <p>Trigonometry, logarithms, exponents, and more. Perfect for students.</p>
+        </a>
+        <a href="graph.html" class="tool-card">
           <h3>Graph Calculator</h3>
-          <p>Plot mathematical functions visually. Enter any equation and see it rendered as an interactive graph.</p>
-        </div>
+          <p>Plot mathematical functions visually. Enter any equation and see it rendered.</p>
+        </a>
       </div>
     </section>
 
@@ -588,145 +199,13 @@
         </div>
       </div>
     </section>
-  </div>
-
-  <!-- Basic Calculator -->
-  <div id="basic" class="page">
-    <div class="page-header">
-      <h1>Basic Calculator</h1>
-      <p>Simple arithmetic operations</p>
-    </div>
-    <div class="calculator-container">
-      <div class="calc-wrapper">
-        <div class="calc-display">
-          <div class="expression" id="basicExpr"></div>
-          <div class="result" id="basicResult">0</div>
-        </div>
-        <div class="calc-buttons">
-          <button class="calc-btn clear" onclick="basicCalc.clear()">C</button>
-          <button class="calc-btn" onclick="basicCalc.backspace()">⌫</button>
-          <button class="calc-btn" onclick="basicCalc.operator('%')">%</button>
-          <button class="calc-btn operator" onclick="basicCalc.operator('/')">÷</button>
-          <button class="calc-btn" onclick="basicCalc.number('7')">7</button>
-          <button class="calc-btn" onclick="basicCalc.number('8')">8</button>
-          <button class="calc-btn" onclick="basicCalc.number('9')">9</button>
-          <button class="calc-btn operator" onclick="basicCalc.operator('*')">×</button>
-          <button class="calc-btn" onclick="basicCalc.number('4')">4</button>
-          <button class="calc-btn" onclick="basicCalc.number('5')">5</button>
-          <button class="calc-btn" onclick="basicCalc.number('6')">6</button>
-          <button class="calc-btn operator" onclick="basicCalc.operator('-')">−</button>
-          <button class="calc-btn" onclick="basicCalc.number('1')">1</button>
-          <button class="calc-btn" onclick="basicCalc.number('2')">2</button>
-          <button class="calc-btn" onclick="basicCalc.number('3')">3</button>
-          <button class="calc-btn operator" onclick="basicCalc.operator('+')">+</button>
-          <button class="calc-btn" onclick="basicCalc.number('0')">0</button>
-          <button class="calc-btn" onclick="basicCalc.decimal()">.</button>
-          <button class="calc-btn" onclick="basicCalc.toggleSign()">±</button>
-          <button class="calc-btn equals" onclick="basicCalc.equals()">=</button>
-        </div>
-      </div>
-      <div class="history-panel">
-        <h3>History <button onclick="basicCalc.clearHistory()">Clear</button></h3>
-        <div id="basicHistory"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Scientific Calculator -->
-  <div id="scientific" class="page">
-    <div class="page-header">
-      <h1>Scientific Calculator</h1>
-      <p>Advanced mathematical functions</p>
-      <div class="mode-toggle">
-        <button class="active" id="radBtn" onclick="sciCalc.setAngle('RAD')">RAD</button>
-        <button id="degBtn" onclick="sciCalc.setAngle('DEG')">DEG</button>
-      </div>
-    </div>
-    <div class="calculator-container">
-      <div class="calc-wrapper">
-        <div class="calc-display">
-          <div class="expression" id="sciExpr"></div>
-          <div class="result" id="sciResult">0</div>
-        </div>
-        <div class="calc-buttons scientific">
-          <button class="calc-btn clear" onclick="sciCalc.clear()">C</button>
-          <button class="calc-btn" onclick="sciCalc.backspace()">⌫</button>
-          <button class="calc-btn func" onclick="sciCalc.input('(')">(</button>
-          <button class="calc-btn func" onclick="sciCalc.input(')')">)</button>
-          <button class="calc-btn operator" onclick="sciCalc.operator('/')">÷</button>
-          
-          <button class="calc-btn func" onclick="sciCalc.func('sin')">sin</button>
-          <button class="calc-btn func" onclick="sciCalc.func('cos')">cos</button>
-          <button class="calc-btn func" onclick="sciCalc.func('tan')">tan</button>
-          <button class="calc-btn func" onclick="sciCalc.func('√')">√</button>
-          <button class="calc-btn operator" onclick="sciCalc.operator('*')">×</button>
-          
-          <button class="calc-btn func" onclick="sciCalc.func('log')">log</button>
-          <button class="calc-btn func" onclick="sciCalc.func('ln')">ln</button>
-          <button class="calc-btn func" onclick="sciCalc.func('^')">xⁿ</button>
-          <button class="calc-btn func" onclick="sciCalc.func('π')">π</button>
-          <button class="calc-btn operator" onclick="sciCalc.operator('-')">−</button>
-          
-          <button class="calc-btn" onclick="sciCalc.number('7')">7</button>
-          <button class="calc-btn" onclick="sciCalc.number('8')">8</button>
-          <button class="calc-btn" onclick="sciCalc.number('9')">9</button>
-          <button class="calc-btn func" onclick="sciCalc.func('e')">e</button>
-          <button class="calc-btn operator" onclick="sciCalc.operator('+')">+</button>
-          
-          <button class="calc-btn" onclick="sciCalc.number('4')">4</button>
-          <button class="calc-btn" onclick="sciCalc.number('5')">5</button>
-          <button class="calc-btn" onclick="sciCalc.number('6')">6</button>
-          <button class="calc-btn func" onclick="sciCalc.func('!')">n!</button>
-          <button class="calc-btn equals" onclick="sciCalc.equals()">=</button>
-          
-          <button class="calc-btn" onclick="sciCalc.number('1')">1</button>
-          <button class="calc-btn" onclick="sciCalc.number('2')">2</button>
-          <button class="calc-btn" onclick="sciCalc.number('3')">3</button>
-          <button class="calc-btn" onclick="sciCalc.number('0')">0</button>
-          <button class="calc-btn" onclick="sciCalc.decimal()">.</button>
-        </div>
-      </div>
-      <div class="history-panel">
-        <h3>History <button onclick="sciCalc.clearHistory()">Clear</button></h3>
-        <div id="sciHistory"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Graph Calculator -->
-  <div id="graph" class="page">
-    <div class="page-header">
-      <h1>Graph Calculator</h1>
-      <p>Plot mathematical functions</p>
-    </div>
-    <div class="calculator-container" style="justify-content: center;">
-      <div class="graph-container">
-        <div class="graph-input">
-          <input type="text" id="graphFunction" placeholder="e.g., sin(x), x^2, 2*x+1" value="sin(x)">
-          <button onclick="drawGraph()">Plot</button>
-        </div>
-        <canvas id="graphCanvas" width="700" height="400"></canvas>
-        <div class="graph-examples">
-          <span>Try:</span>
-          <button onclick="setGraph('x*x')">x²</button>
-          <button onclick="setGraph('x*x*x')">x³</button>
-          <button onclick="setGraph('Math.sin(x)')">sin(x)</button>
-          <button onclick="setGraph('Math.cos(x)')">cos(x)</button>
-          <button onclick="setGraph('2*x+1')">2x+1</button>
-          <button onclick="setGraph('1/x')">1/x</button>
-          <button onclick="setGraph('Math.sqrt(x)')">√x</button>
-          <button onclick="setGraph('Math.abs(x)')">|x|</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  </main>
 
   <footer>
     <p>CalcLab — Built with precision</p>
   </footer>
 
   <script>
-    // Theme
     function toggleTheme() {
       const html = document.documentElement;
       if (html.getAttribute('data-theme') === 'dark') {
@@ -736,353 +215,10 @@
         html.setAttribute('data-theme', 'dark');
         localStorage.setItem('theme', 'dark');
       }
-      drawGraph();
     }
-
     if (localStorage.getItem('theme') === 'dark') {
       document.documentElement.setAttribute('data-theme', 'dark');
     }
-
-    // Navigation
-    function showPage(pageId) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-      document.getElementById(pageId).classList.add('active');
-      
-      const btns = document.querySelectorAll('nav button');
-      if (pageId === 'home') btns[0].classList.add('active');
-      else if (pageId === 'basic') btns[1].classList.add('active');
-      else if (pageId === 'scientific') btns[2].classList.add('active');
-      else if (pageId === 'graph') {
-        btns[3].classList.add('active');
-        drawGraph();
-      }
-      window.scrollTo(0, 0);
-    }
-
-    // Basic Calculator
-    const basicCalc = {
-      current: '0',
-      expr: '',
-      
-      update() {
-        document.getElementById('basicResult').textContent = this.current;
-        document.getElementById('basicExpr').textContent = this.expr;
-      },
-      
-      number(n) {
-        if (this.current === '0' || this.current === 'Error') this.current = n;
-        else if (this.current.length < 15) this.current += n;
-        this.update();
-      },
-      
-      decimal() {
-        if (!this.current.includes('.')) this.current += '.';
-        this.update();
-      },
-      
-      operator(op) {
-        this.expr += this.current + ' ' + op + ' ';
-        this.current = '0';
-        this.update();
-      },
-      
-      clear() {
-        this.current = '0';
-        this.expr = '';
-        this.update();
-      },
-      
-      backspace() {
-        if (this.current.length === 1 || this.current === 'Error') this.current = '0';
-        else this.current = this.current.slice(0, -1);
-        this.update();
-      },
-      
-      toggleSign() {
-        if (this.current !== '0' && this.current !== 'Error') {
-          this.current = this.current.startsWith('-') ? this.current.slice(1) : '-' + this.current;
-        }
-        this.update();
-      },
-      
-      equals() {
-        try {
-          const fullExpr = this.expr + this.current;
-          const result = Function('"use strict";return (' + fullExpr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-') + ')')();
-          if (!isFinite(result)) throw new Error();
-          this.addHistory(fullExpr, result);
-          this.current = String(Math.round(result * 1e10) / 1e10);
-          this.expr = '';
-        } catch (e) {
-          this.current = 'Error';
-        }
-        this.update();
-      },
-      
-      addHistory(expr, result) {
-        const hist = JSON.parse(localStorage.getItem('basicHistory') || '[]');
-        hist.unshift({ expr, result: String(result), time: Date.now() });
-        if (hist.length > 20) hist.pop();
-        localStorage.setItem('basicHistory', JSON.stringify(hist));
-        renderHistory('basicHistory', hist);
-      },
-      
-      clearHistory() {
-        localStorage.removeItem('basicHistory');
-        renderHistory('basicHistory', []);
-      }
-    };
-
-    // Scientific Calculator
-    const sciCalc = {
-      current: '0',
-      expr: '',
-      angle: 'RAD',
-      
-      update() {
-        document.getElementById('sciResult').textContent = this.current;
-        document.getElementById('sciExpr').textContent = this.expr;
-      },
-      
-      number(n) {
-        if (this.current === '0' || this.current === 'Error') this.current = n;
-        else if (this.current.length < 15) this.current += n;
-        this.update();
-      },
-      
-      decimal() {
-        if (!this.current.includes('.')) this.current += '.';
-        this.update();
-      },
-      
-      input(val) {
-        if (this.current === '0' || this.current === 'Error') this.current = val;
-        else this.current += val;
-        this.update();
-      },
-      
-      operator(op) {
-        this.expr += this.current + ' ' + op + ' ';
-        this.current = '0';
-        this.update();
-      },
-      
-      setAngle(mode) {
-        this.angle = mode;
-        document.getElementById('radBtn').classList.toggle('active', mode === 'RAD');
-        document.getElementById('degBtn').classList.toggle('active', mode === 'DEG');
-      },
-      
-      func(f) {
-        const val = parseFloat(this.current);
-        try {
-          let result;
-          switch(f) {
-            case 'π': result = Math.PI; break;
-            case 'e': result = Math.E; break;
-            case '√': result = Math.sqrt(Math.abs(val)); break;
-            case '^': this.expr += this.current + ' ** '; this.current = ''; this.update(); return;
-            case '!': 
-              result = val >= 0 && Number.isInteger(val) ? (val > 170 ? 'Overflow' : factorial(val)) : 'Error';
-              break;
-            case 'log': result = val > 0 ? Math.log10(val) : 'Error'; break;
-            case 'ln': result = val > 0 ? Math.log(val) : 'Error'; break;
-            case 'sin': result = this.angle === 'DEG' ? Math.sin(val * Math.PI / 180) : Math.sin(val); break;
-            case 'cos': result = this.angle === 'DEG' ? Math.cos(val * Math.PI / 180) : Math.cos(val); break;
-            case 'tan': result = this.angle === 'DEG' ? Math.tan(val * Math.PI / 180) : Math.tan(val); break;
-            default: return;
-          }
-          this.current = String(result);
-        } catch (e) {
-          this.current = 'Error';
-        }
-        this.update();
-      },
-      
-      clear() {
-        this.current = '0';
-        this.expr = '';
-        this.update();
-      },
-      
-      backspace() {
-        if (this.current.length === 1 || this.current === 'Error') this.current = '0';
-        else this.current = this.current.slice(0, -1);
-        this.update();
-      },
-      
-      equals() {
-        try {
-          let fullExpr = this.expr + this.current;
-          fullExpr = fullExpr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-')
-            .replace(/π/g, Math.PI).replace(/e/g, Math.E);
-          
-          const result = Function('"use strict";return (' + fullExpr + ')')();
-          if (!isFinite(result)) throw new Error();
-          
-          this.addHistory(this.expr + this.current, result);
-          this.current = String(Math.round(result * 1e10) / 1e10);
-          this.expr = '';
-        } catch (e) {
-          this.current = 'Error';
-        }
-        this.update();
-      },
-      
-      addHistory(expr, result) {
-        const hist = JSON.parse(localStorage.getItem('sciHistory') || '[]');
-        hist.unshift({ expr, result: String(result), time: Date.now() });
-        if (hist.length > 20) hist.pop();
-        localStorage.setItem('sciHistory', JSON.stringify(hist));
-        renderHistory('sciHistory', hist);
-      },
-      
-      clearHistory() {
-        localStorage.removeItem('sciHistory');
-        renderHistory('sciHistory', []);
-      }
-    };
-
-    function factorial(n) {
-      if (n === 0 || n === 1) return 1;
-      let result = 1;
-      for (let i = 2; i <= n; i++) result *= i;
-      return result;
-    }
-
-    function renderHistory(id, hist) {
-      const el = document.getElementById(id);
-      if (!el) return;
-      if (hist.length === 0) {
-        el.innerHTML = '<div style="color: var(--text-muted); font-size: 0.8rem;">No calculations yet</div>';
-        return;
-      }
-      el.innerHTML = hist.slice(0, 10).map(item => `
-        <div class="history-item" onclick="recallHistory('${item.result}')">
-          <div class="expr">${item.expr}</div>
-          <div class="result">= ${item.result}</div>
-        </div>
-      `).join('');
-    }
-
-    function recallHistory(val) {
-      basicCalc.current = val;
-      sciCalc.current = val;
-      basicCalc.update();
-      sciCalc.update();
-      showPage('basic');
-    }
-
-    // Graph
-    function setGraph(expr) {
-      document.getElementById('graphFunction').value = expr;
-      drawGraph();
-    }
-
-    function drawGraph() {
-      const canvas = document.getElementById('graphCanvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      const input = document.getElementById('graphFunction');
-      if (!input) return;
-      const expr = input.value || 'sin(x)';
-      
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const bg = isDark ? '#252525' : '#ebe5d9';
-      const fg = isDark ? '#f5f0e8' : '#1a1a1a';
-      const accent = '#e63946';
-      const gridCol = isDark ? '#3a3a3a' : '#d0cbc0';
-      
-      canvas.width = 600;
-      canvas.height = 350;
-      
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      const w = canvas.width;
-      const h = canvas.height;
-      const scale = 30;
-      const centerX = w / 2;
-      const centerY = h / 2;
-      
-      ctx.strokeStyle = gridCol;
-      ctx.lineWidth = 1;
-      for (let x = centerX % scale; x < w; x += scale) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-      for (let y = centerY % scale; y < h; y += scale) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
-      
-      ctx.strokeStyle = fg;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(0, centerY); ctx.lineTo(w, centerY);
-      ctx.moveTo(centerX, 0); ctx.lineTo(centerX, h);
-      ctx.stroke();
-      
-      try {
-        const safeExpr = expr
-          .replace(/sin/g, 'Math.sin')
-          .replace(/cos/g, 'Math.cos')
-          .replace(/tan/g, 'Math.tan')
-          .replace(/sqrt/g, 'Math.sqrt')
-          .replace(/log/g, 'Math.log10')
-          .replace(/ln/g, 'Math.log')
-          .replace(/abs/g, 'Math.abs')
-          .replace(/exp/g, 'Math.exp')
-          .replace(/pow/g, 'Math.pow')
-          .replace(/PI/g, 'Math.PI')
-          .replace(/E/g, 'Math.E');
-        
-        const func = new Function('x', 'return ' + safeExpr);
-        
-        ctx.strokeStyle = accent;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        
-        let started = false;
-        for (let px = 0; px < w; px++) {
-          const x = (px - centerX) / scale;
-          let y;
-          try { y = func(x); } catch (e) { started = false; continue; }
-          
-          if (isFinite(y) && Math.abs(y) < 50) {
-            const py = centerY - y * scale;
-            if (py >= -10 && py <= h + 10) {
-              if (!started) { ctx.moveTo(px, py); started = true; }
-              else ctx.lineTo(px, py);
-            } else { started = false; }
-          } else { started = false; }
-        }
-        ctx.stroke();
-      } catch (e) {
-        ctx.fillStyle = accent;
-        ctx.font = '14px monospace';
-        ctx.fillText('Invalid: ' + expr, 10, 25);
-      }
-    }
-
-    // Init
-    renderHistory('basicHistory', JSON.parse(localStorage.getItem('basicHistory') || '[]'));
-    renderHistory('sciHistory', JSON.parse(localStorage.getItem('sciHistory') || '[]'));
-
-    // Keyboard
-    document.addEventListener('keydown', (e) => {
-      const activePage = document.querySelector('.page.active').id;
-      if (activePage === 'basic') {
-        if (e.key >= '0' && e.key <= '9') basicCalc.number(e.key);
-        if (e.key === '.') basicCalc.decimal();
-        if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') basicCalc.operator(e.key);
-        if (e.key === 'Enter' || e.key === '=') basicCalc.equals();
-        if (e.key === 'Escape') basicCalc.clear();
-        if (e.key === 'Backspace') basicCalc.backspace();
-      } else if (activePage === 'scientific') {
-        if (e.key >= '0' && e.key <= '9') sciCalc.number(e.key);
-        if (e.key === '.') sciCalc.decimal();
-        if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') sciCalc.operator(e.key);
-        if (e.key === 'Enter' || e.key === '=') sciCalc.equals();
-        if (e.key === 'Escape') sciCalc.clear();
-        if (e.key === 'Backspace') sciCalc.backspace();
-      }
-    });
   </script>
 </body>
 </html>
