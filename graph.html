@@ -52,11 +52,11 @@
       <canvas id="graphCanvas" width="600" height="350"></canvas>
       <div class="graph-examples">
         <span>Try:</span>
-        <button onclick="setGraph('x*x')">x²</button>
-        <button onclick="setGraph('x*x*x')">x³</button>
         <button onclick="setGraph('3x+5')">3x+5</button>
         <button onclick="setGraph('2x-3')">2x-3</button>
-        <button onclick="setGraph('x*x-4')">x²-4</button>
+        <button onclick="setGraph('x^2-4')">x²-4</button>
+        <button onclick="setGraph('x^2')">x²</button>
+        <button onclick="setGraph('x^3')">x³</button>
         <button onclick="setGraph('sin(x)')">sin(x)</button>
         <button onclick="setGraph('cos(x)')">cos(x)</button>
         <button onclick="setGraph('tan(x)')">tan(x)</button>
@@ -98,16 +98,35 @@
       const ctx = canvas.getContext('2d');
       const input = document.getElementById('graphFunction');
       if (!input) return;
-      let expr = input.value.trim() || 'Math.sin(x)';
+      let expr = input.value.trim() || 'sin(x)';
       
-      // Remove y= or f(x)= prefix if present
-      expr = expr.replace(/^(y|f\(x\))\s*=\s*/i, '');
+      // Remove y= or f(x)= or = prefix if present
+      expr = expr.replace(/^[yfx\(\)]+\s*=\s*/i, '');
       
-      // Auto-add * between number and variable: 3x -> 3*x, x3 -> x*3
+      // Replace ^ with ** for exponents
+      expr = expr.replace(/\^/g, '**');
+      
+      // Auto-add * between number and variable: 3x -> 3*x
       expr = expr.replace(/(\d)([a-zA-Z])/g, '$1*$2');
-      expr = expr.replace(/([a-zA-Z])(\d)/g, '$1*$2');
-      // Handle parentheses: 3(x) -> 3*(x)
+      // Auto-add * between variable and parenthesis: x(2) -> x*(2)
+      expr = expr.replace(/([a-zA-Z])(\()/g, '$1*$2');
+      // Auto-add * between ) and ( or ) and number
+      expr = expr.replace(/\)(\()/g, ')*$1');
+      expr = expr.replace(/\)(\d)/g, ')*$1');
       expr = expr.replace(/(\d)(\()/g, '$1*$2');
+      
+      // Replace common math functions
+      expr = expr.replace(/\bsin\b/g, 'Math.sin');
+      expr = expr.replace(/\bcos\b/g, 'Math.cos');
+      expr = expr.replace(/\btan\b/g, 'Math.tan');
+      expr = expr.replace(/\bsqrt\b/g, 'Math.sqrt');
+      expr = expr.replace(/\babs\b/g, 'Math.abs');
+      expr = expr.replace(/\blog\b/g, 'Math.log10');
+      expr = expr.replace(/\bln\b/g, 'Math.log');
+      expr = expr.replace(/\bexp\b/g, 'Math.exp');
+      expr = expr.replace(/\bPI\b/gi, 'Math.PI');
+      expr = expr.replace(/\bE\b/g, 'Math.E');
+      expr = expr.replace(/\bpow\b/g, 'Math.pow');
       
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       const bg = isDark ? '#252525' : '#ebe5d9';
