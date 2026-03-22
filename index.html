@@ -338,14 +338,16 @@
       word-break: break-all;
     }
 
+    .calc-buttons.scientific {
+      grid-template-columns: repeat(5, 1fr);
+      max-width: 320px;
+    }
+
     .calc-buttons {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 0.4rem;
-    }
-
-    .calc-buttons.scientific {
-      grid-template-columns: repeat(5, 1fr);
+      max-width: 320px;
     }
 
     .calc-btn {
@@ -465,13 +467,24 @@
       cursor: pointer;
     }
 
-    #graphCanvas {
+#graphCanvas {
       border: 2px solid var(--border);
       border-radius: 8px;
       background: var(--bg-secondary);
       width: 100%;
-      max-width: 700px;
-      height: auto;
+      max-width: 600px;
+      height: 350px;
+      display: block;
+    }
+
+    /* Graph */
+    .graph-container {
+      background: var(--card-bg);
+      border: 3px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: var(--shadow);
+      max-width: 640px;
     }
 
     .graph-examples {
@@ -695,13 +708,14 @@
         <canvas id="graphCanvas" width="700" height="400"></canvas>
         <div class="graph-examples">
           <span>Try:</span>
-          <button onclick="setGraph('x^2')">x²</button>
-          <button onclick="setGraph('x^3')">x³</button>
-          <button onclick="setGraph('sin(x)')">sin(x)</button>
-          <button onclick="setGraph('cos(x)')">cos(x)</button>
+          <button onclick="setGraph('x*x')">x²</button>
+          <button onclick="setGraph('x*x*x')">x³</button>
+          <button onclick="setGraph('Math.sin(x)')">sin(x)</button>
+          <button onclick="setGraph('Math.cos(x)')">cos(x)</button>
           <button onclick="setGraph('2*x+1')">2x+1</button>
           <button onclick="setGraph('1/x')">1/x</button>
           <button onclick="setGraph('Math.sqrt(x)')">√x</button>
+          <button onclick="setGraph('Math.abs(x)')">|x|</button>
         </div>
       </div>
     </div>
@@ -968,14 +982,20 @@
 
     function drawGraph() {
       const canvas = document.getElementById('graphCanvas');
+      if (!canvas) return;
       const ctx = canvas.getContext('2d');
-      const expr = document.getElementById('graphFunction').value;
+      const input = document.getElementById('graphFunction');
+      if (!input) return;
+      const expr = input.value || 'sin(x)';
       
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       const bg = isDark ? '#252525' : '#ebe5d9';
       const fg = isDark ? '#f5f0e8' : '#1a1a1a';
       const accent = '#e63946';
-      const grid = isDark ? '#3a3a3a' : '#d0cbc0';
+      const gridCol = isDark ? '#3a3a3a' : '#d0cbc0';
+      
+      canvas.width = 600;
+      canvas.height = 350;
       
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -986,18 +1006,11 @@
       const centerX = w / 2;
       const centerY = h / 2;
       
-      // Grid
-      ctx.strokeStyle = grid;
+      ctx.strokeStyle = gridCol;
       ctx.lineWidth = 1;
-      const gridStep = scale;
-      for (let x = centerX % gridStep; x < w; x += gridStep) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
-      }
-      for (let y = centerY % gridStep; y < h; y += gridStep) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
-      }
+      for (let x = centerX % scale; x < w; x += scale) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+      for (let y = centerY % scale; y < h; y += scale) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
       
-      // Axes
       ctx.strokeStyle = fg;
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -1006,34 +1019,44 @@
       ctx.stroke();
       
       try {
-        const func = new Function('x', 'return ' + expr);
+        const safeExpr = expr
+          .replace(/sin/g, 'Math.sin')
+          .replace(/cos/g, 'Math.cos')
+          .replace(/tan/g, 'Math.tan')
+          .replace(/sqrt/g, 'Math.sqrt')
+          .replace(/log/g, 'Math.log10')
+          .replace(/ln/g, 'Math.log')
+          .replace(/abs/g, 'Math.abs')
+          .replace(/exp/g, 'Math.exp')
+          .replace(/pow/g, 'Math.pow')
+          .replace(/PI/g, 'Math.PI')
+          .replace(/E/g, 'Math.E');
+        
+        const func = new Function('x', 'return ' + safeExpr);
+        
         ctx.strokeStyle = accent;
-        ctx.lineWidth = 2.5;
+        ctx.lineWidth = 2;
         ctx.beginPath();
         
         let started = false;
         for (let px = 0; px < w; px++) {
           const x = (px - centerX) / scale;
           let y;
-          try { y = func(x); } catch (e) { continue; }
+          try { y = func(x); } catch (e) { started = false; continue; }
           
-          if (isFinite(y) && Math.abs(y) < 100) {
+          if (isFinite(y) && Math.abs(y) < 50) {
             const py = centerY - y * scale;
-            if (py >= -100 && py <= h + 100) {
+            if (py >= -10 && py <= h + 10) {
               if (!started) { ctx.moveTo(px, py); started = true; }
               else ctx.lineTo(px, py);
-            } else {
-              started = false;
-            }
-          } else {
-            started = false;
-          }
+            } else { started = false; }
+          } else { started = false; }
         }
         ctx.stroke();
       } catch (e) {
         ctx.fillStyle = accent;
-        ctx.font = '14px Space Mono';
-        ctx.fillText('Invalid function', 10, 25);
+        ctx.font = '14px monospace';
+        ctx.fillText('Invalid: ' + expr, 10, 25);
       }
     }
 
