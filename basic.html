@@ -112,19 +112,24 @@
       },
       
       decimal() {
+        if (this.current === 'Error') this.current = '0';
         if (!this.current.includes('.')) this.current += '.';
         this.update();
       },
       
       operator(op) {
         if (op === '%') {
+          if (this.current === 'Error') return;
           const val = parseFloat(this.current) / 100;
-          this.current = String(Math.round(val * 1e10) / 1e10);
+          this.current = this.formatResult(val);
           this.update();
         } else {
-          if (this.current !== '0' && this.current !== '') {
+          if (this.current !== '0' && this.current !== '' && this.current !== 'Error') {
             this.lastOp = op;
             this.lastNum = this.current;
+          } else if (this.lastOp) {
+            this.lastOp = op;
+            this.expr = this.expr.trim().replace(/ [\+\-\*\/%]$/, ' ' + op + ' ');
           }
           this.expr += this.current + ' ' + op + ' ';
           this.current = '0';
@@ -164,7 +169,7 @@
       
       memoryRecall() {
         if (this.memory !== 0) {
-          if (this.current === '0') this.current = String(this.memory);
+          if (this.current === '0' || this.current === 'Error') this.current = String(this.memory);
           else this.current += String(this.memory);
         }
         this.update();
@@ -172,7 +177,7 @@
       
       memoryAdd() {
         const val = parseFloat(this.current);
-        if (!isNaN(val)) {
+        if (!isNaN(val) && this.current !== 'Error') {
           this.memory += val;
           this.current = '0';
         }
@@ -181,7 +186,7 @@
       
       memorySub() {
         const val = parseFloat(this.current);
-        if (!isNaN(val)) {
+        if (!isNaN(val) && this.current !== 'Error') {
           this.memory -= val;
           this.current = '0';
         }
@@ -202,17 +207,32 @@
           let fullExpr = this.expr + this.current;
           if (!fullExpr.trim()) return;
           
-          const result = Function('"use strict";return (' + fullExpr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-') + ')')();
+          const result = this.safeEval(fullExpr);
           if (!isFinite(result)) throw new Error('Division by zero');
           
           this.addHistory(fullExpr, result);
           this.lastNum = this.current;
-          this.current = String(Math.round(result * 1e10) / 1e10);
+          this.current = this.formatResult(result);
           this.expr = '';
         } catch (e) {
           this.current = 'Error';
         }
         this.update();
+      },
+      
+      safeEval(expr) {
+        let e = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/π/g, Math.PI).replace(/\^/g, '**');
+        return Function('"use strict";return (' + e + ')')();
+      },
+      
+      formatResult(num) {
+        if (Math.abs(num) < 0.0000000001) return '0';
+        if (!isFinite(num)) return 'Error';
+        const rounded = Math.round(num * 1e10) / 1e10;
+        if (Math.abs(rounded) > 1e10 || (Math.abs(rounded) < 1e-6 && rounded !== 0)) {
+          return rounded.toExponential(6);
+        }
+        return String(rounded);
       },
       
       repeatEquals() {

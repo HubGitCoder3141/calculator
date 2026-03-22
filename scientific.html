@@ -628,19 +628,33 @@ const calc = {
         try {
           let fullExpr = this.expr + this.current;
           fullExpr = fullExpr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-')
-            .replace(/π/g, Math.PI).replace(/e/g, Math.E);
+            .replace(/π/g, Math.PI).replace(/e(?![x])/gi, Math.E).replace(/\^/g, '**');
           
-          const result = Function('"use strict";return (' + fullExpr + ')')();
+          const result = this.safeEval(fullExpr);
           if (!isFinite(result)) throw new Error();
           
           this.ans = result;
           this.addHistory(this.expr + this.current, result);
-          this.current = this.toFraction(Math.round(result * 1e10) / 1e10);
+          this.current = this.toFraction(this.formatResult(result));
           this.expr = '';
         } catch (e) {
           this.current = 'Error';
         }
         this.update();
+      },
+      
+      safeEval(expr) {
+        return Function('"use strict";return (' + expr + ')')();
+      },
+      
+      formatResult(num) {
+        if (Math.abs(num) < 0.0000000001) return '0';
+        if (!isFinite(num)) return 'Error';
+        const rounded = Math.round(num * 1e10) / 1e10;
+        if (Math.abs(rounded) > 1e10 || (Math.abs(rounded) < 1e-6 && rounded !== 0)) {
+          return rounded.toExponential(6);
+        }
+        return String(rounded);
       },
       
       addHistory(expr, result) {
