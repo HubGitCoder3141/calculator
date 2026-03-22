@@ -361,6 +361,104 @@ const calc = {
         this.update();
       },
       
+      toRad(val) {
+        if (this.angle === 'DEG') return val * Math.PI / 180;
+        if (this.angle === 'GRAD') return val * Math.PI / 200;
+        return val;
+      },
+      
+      fromRad(val) {
+        if (this.angle === 'DEG') return val * 180 / Math.PI;
+        if (this.angle === 'GRAD') return val * 200 / Math.PI;
+        return val;
+      },
+      
+      number(n) {
+        if (this.current === '0' || this.current === 'Error') this.current = n;
+        else if (this.current.length < 15) this.current += n;
+        this.update();
+      },
+      
+      decimal() {
+        if (!this.current.includes('.')) this.current += '.';
+        this.update();
+      },
+      
+      input(val) {
+        if (this.current === '0' || this.current === 'Error') this.current = val;
+        else this.current += val;
+        this.update();
+      },
+      
+      operator(op) {
+        this.expr += this.current + ' ' + op + ' ';
+        this.current = '0';
+        this.update();
+      },
+      
+      setAngle(mode) {
+        this.angle = mode;
+        document.getElementById('radBtn').classList.toggle('active', mode === 'RAD');
+        document.getElementById('degBtn').classList.toggle('active', mode === 'DEG');
+        document.getElementById('gradBtn').classList.toggle('active', mode === 'GRAD');
+      },
+      
+      func(f) {
+        const val = parseFloat(this.current);
+        try {
+          let result;
+          switch(f) {
+            case 'pi': result = Math.PI; break;
+            case 'e': result = Math.E; break;
+            case 'sqrt': result = Math.sqrt(Math.abs(val)); break;
+            case 'cbrt': result = Math.cbrt(val); break;
+            case 'abs': result = Math.abs(val); break;
+            case 'pow': this.expr += this.current + ' ** '; this.current = ''; this.update(); return;
+            case 'fact': result = val >= 0 && Number.isInteger(val) ? (val > 170 ? 'Overflow' : factorial(val)) : 'Error'; break;
+            case 'log': result = val > 0 ? Math.log10(val) : 'Error'; break;
+            case 'ln': result = val > 0 ? Math.log(val) : 'Error'; break;
+            case 'sin': result = Math.sin(this.toRad(val)); break;
+            case 'cos': result = Math.cos(this.toRad(val)); break;
+            case 'tan': result = Math.tan(this.toRad(val)); break;
+            case 'asin': result = this.fromRad(Math.asin(val)); break;
+            case 'acos': result = this.fromRad(Math.acos(val)); break;
+            case 'atan': result = this.fromRad(Math.atan(val)); break;
+            default: return;
+          }
+          this.current = String(result);
+        } catch (e) {
+          this.current = 'Error';
+        }
+        this.update();
+      },
+      
+      toFraction(num) {
+        if (!this.fractionMode || !isFinite(num) || num === 0) return String(num);
+        const tolerance = 1e-6;
+        let h1 = 1, k1 = 0, h2 = 0, k2 = 1;
+        let b = num;
+        while (true) {
+          const a = Math.floor(b);
+          let frac = a + k2 / k1;
+          if (Math.abs(num - frac) < tolerance || k1 > 100) {
+            if (k1 === 1) return String(a);
+            return (a === 0 ? '' : a) + ' ' + (h1 === k1 ? '1' : h1 + '/' + k1);
+          }
+          const h3 = a * h1 + h2, k3 = a * k1 + k2;
+          h2 = h1; k2 = k1;
+          h1 = h3; k1 = k3;
+          if (Math.abs(num - a) < tolerance) break;
+          b = 1 / (b - a);
+        }
+        return String(num);
+      },
+      
+      toggleFraction() {
+        this.fractionMode = !this.fractionMode;
+        document.querySelector('.calc-btn[title="Toggle fraction display"]').classList.toggle('active', this.fractionMode);
+        this.update();
+      },
+      
       number(n) {
         if (this.current === '0' || this.current === 'Error') this.current = n;
         else if (this.current.length < 15) this.current += n;
