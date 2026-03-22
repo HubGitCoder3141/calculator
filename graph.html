@@ -471,8 +471,9 @@
       
       const xRange = xMax - xMin;
       const yRange = yMax - yMin;
-      const scaleX = w / xRange;
-      const scaleY = h / yRange;
+      const scale = Math.min(w / xRange, h / yRange);
+      const scaleX = (mode === 'func') ? scale : w / xRange;
+      const scaleY = (mode === 'func') ? scale : h / yRange;
       const toPxX = (x) => (x - xMin) * scaleX;
       const toPxY = (y) => h - (y - yMin) * scaleY;
       
@@ -498,6 +499,7 @@
       
       // Draw functions
       if (mode === 'func') {
+        const funcScaleX = w / xRange;
         functions.forEach((f, i) => {
           if (!f.active || !f.expr) return;
           const parsed = parseMath(f.expr);
@@ -509,7 +511,7 @@
             ctx.beginPath();
             let started = false;
             for (let px = 0; px < w; px++) {
-              const x = xMin + px / scaleX;
+              const x = xMin + px / funcScaleX;
               const y = func(x);
               if (isFinite(y) && y >= yMin - yRange && y <= yMax + yRange) {
                 const py = toPxY(y);

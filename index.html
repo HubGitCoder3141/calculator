@@ -219,25 +219,37 @@
       const toIdx = parseInt(document.getElementById('unitTo').value);
       if (isNaN(val)) { document.getElementById('convInput2').value = ''; return; }
       const u = convUnits[type];
-      if (type === 'temp') {
-        const celsius = fromIdx === 0 ? val : fromIdx === 1 ? (val - 32) * 5 / 9 : val - 273.15;
-        const result = toIdx === 0 ? celsius : toIdx === 1 ? celsius * 9 / 5 + 32 : celsius + 273.15;
-        document.getElementById('convInput2').value = result.toFixed(4);
-      } else {
-        const base = val * u.factors[fromIdx];
-        document.getElementById('convInput2').value = (base / u.factors[toIdx]).toFixed(4);
+      try {
+        if (type === 'temp') {
+          const celsius = fromIdx === 0 ? val : fromIdx === 1 ? (val - 32) * 5 / 9 : val - 273.15;
+          const result = toIdx === 0 ? celsius : toIdx === 1 ? celsius * 9 / 5 + 32 : celsius + 273.15;
+          document.getElementById('convInput2').value = Number.isFinite(result) ? result.toFixed(4) : 'Error';
+        } else {
+          const base = val * u.factors[fromIdx];
+          document.getElementById('convInput2').value = Number.isFinite(base / u.factors[toIdx]) ? (base / u.factors[toIdx]).toFixed(4) : 'Error';
+        }
+      } catch (e) {
+        document.getElementById('convInput2').value = 'Error';
       }
     }
 
     async function fetchRates() {
       try {
         const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        if (!res.ok) throw new Error('Network error');
         const data = await res.json();
         rates = data.rates;
+        localStorage.setItem('currencyRates', JSON.stringify({ rates, timestamp: Date.now() }));
         convertCurrency();
         alert('Rates updated!');
       } catch (e) {
-        alert('Could not fetch rates. Using cached rates.');
+        const cached = JSON.parse(localStorage.getItem('currencyRates') || '{}');
+        if (cached.rates) {
+          rates = cached.rates;
+          alert('Using cached rates');
+        } else {
+          alert('Could not fetch rates. Check internet connection.');
+        }
       }
     }
 
@@ -246,11 +258,16 @@
       const from = document.getElementById('currFrom').value;
       const to = document.getElementById('currTo').value;
       if (isNaN(val)) { document.getElementById('currInput2').value = ''; return; }
+      if (!rates[from] || !rates[to]) { document.getElementById('currInput2').value = 'Error'; return; }
       const result = (val / rates[from]) * rates[to];
-      document.getElementById('currInput2').value = result.toFixed(2);
+      document.getElementById('currInput2').value = isFinite(result) ? result.toFixed(2) : 'Error';
     }
 
     function initCurrency() {
+      const cached = JSON.parse(localStorage.getItem('currencyRates') || '{}');
+      if (cached.rates && Date.now() - cached.timestamp < 3600000) {
+        rates = cached.rates;
+      }
       const from = document.getElementById('currFrom');
       const to = document.getElementById('currTo');
       from.innerHTML = currencies.map(c => `<option value="${c}">${c}</option>`).join('');

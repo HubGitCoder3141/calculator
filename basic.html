@@ -17,8 +17,8 @@
       <a href="basic.html" class="active">Basic</a>
       <a href="scientific.html">Scientific</a>
       <a href="graph.html">Graph</a>
-      <button class="theme-btn" onclick="toggleTheme()">◐</button>
-      <button class="theme-btn" onclick="showSettings()" title="Settings">⚙</button>
+      <button class="theme-btn" onclick="toggleTheme()" aria-label="Toggle dark/light theme">◐</button>
+      <button class="theme-btn" onclick="showSettings()" aria-label="Open settings">⚙</button>
     </nav>
   </header>
 
@@ -39,31 +39,31 @@
           <div class="memory-indicator" id="memIndicator"></div>
         </div>
         <div class="calc-buttons">
-          <button class="calc-btn func" onclick="calc.memoryClear()" title="Memory Clear">MC</button>
-          <button class="calc-btn func" onclick="calc.memoryRecall()" title="Memory Recall">MR</button>
-          <button class="calc-btn func" onclick="calc.memoryAdd()" title="Memory Add">M+</button>
-          <button class="calc-btn func" onclick="calc.memorySub()" title="Memory Subtract">M-</button>
-          <button class="calc-btn clear" onclick="calc.clearAll()">C</button>
-          <button class="calc-btn" onclick="calc.clearEntry()">CE</button>
-          <button class="calc-btn" onclick="calc.backspace()">⌫</button>
-          <button class="calc-btn" onclick="calc.operator('%')">%</button>
-          <button class="calc-btn operator" onclick="calc.operator('/')">÷</button>
-          <button class="calc-btn" onclick="calc.number('7')">7</button>
-          <button class="calc-btn" onclick="calc.number('8')">8</button>
-          <button class="calc-btn" onclick="calc.number('9')">9</button>
-          <button class="calc-btn operator" onclick="calc.operator('*')">×</button>
-          <button class="calc-btn" onclick="calc.number('4')">4</button>
-          <button class="calc-btn" onclick="calc.number('5')">5</button>
-          <button class="calc-btn" onclick="calc.number('6')">6</button>
-          <button class="calc-btn operator" onclick="calc.operator('-')">−</button>
-          <button class="calc-btn" onclick="calc.number('1')">1</button>
-          <button class="calc-btn" onclick="calc.number('2')">2</button>
-          <button class="calc-btn" onclick="calc.number('3')">3</button>
-          <button class="calc-btn operator" onclick="calc.operator('+')">+</button>
-          <button class="calc-btn" onclick="calc.number('0')">0</button>
-          <button class="calc-btn" onclick="calc.decimal()">.</button>
-          <button class="calc-btn" onclick="calc.toggleSign()">±</button>
-          <button class="calc-btn equals" onclick="calc.equals()">=</button>
+          <button class="calc-btn func" onclick="calc.memoryClear()" title="Memory Clear" aria-label="Memory Clear">MC</button>
+          <button class="calc-btn func" onclick="calc.memoryRecall()" title="Memory Recall" aria-label="Memory Recall">MR</button>
+          <button class="calc-btn func" onclick="calc.memoryAdd()" title="Memory Add" aria-label="Memory Add">M+</button>
+          <button class="calc-btn func" onclick="calc.memorySub()" title="Memory Subtract" aria-label="Memory Subtract">M-</button>
+          <button class="calc-btn clear" onclick="calc.clearAll()" aria-label="Clear All">C</button>
+          <button class="calc-btn" onclick="calc.clearEntry()" aria-label="Clear Entry">CE</button>
+          <button class="calc-btn" onclick="calc.backspace()" aria-label="Backspace">⌫</button>
+          <button class="calc-btn" onclick="calc.operator('%')" aria-label="Percent">%</button>
+          <button class="calc-btn operator" onclick="calc.operator('/')" aria-label="Divide">÷</button>
+          <button class="calc-btn" onclick="calc.number('7')" aria-label="Seven">7</button>
+          <button class="calc-btn" onclick="calc.number('8')" aria-label="Eight">8</button>
+          <button class="calc-btn" onclick="calc.number('9')" aria-label="Nine">9</button>
+          <button class="calc-btn operator" onclick="calc.operator('*')" aria-label="Multiply">×</button>
+          <button class="calc-btn" onclick="calc.number('4')" aria-label="Four">4</button>
+          <button class="calc-btn" onclick="calc.number('5')" aria-label="Five">5</button>
+          <button class="calc-btn" onclick="calc.number('6')" aria-label="Six">6</button>
+          <button class="calc-btn operator" onclick="calc.operator('-')" aria-label="Subtract">−</button>
+          <button class="calc-btn" onclick="calc.number('1')" aria-label="One">1</button>
+          <button class="calc-btn" onclick="calc.number('2')" aria-label="Two">2</button>
+          <button class="calc-btn" onclick="calc.number('3')" aria-label="Three">3</button>
+          <button class="calc-btn operator" onclick="calc.operator('+')" aria-label="Add">+</button>
+          <button class="calc-btn" onclick="calc.number('0')" aria-label="Zero">0</button>
+          <button class="calc-btn" onclick="calc.decimal()" aria-label="Decimal">.</button>
+          <button class="calc-btn" onclick="calc.toggleSign()" aria-label="Toggle Sign">±</button>
+          <button class="calc-btn equals" onclick="calc.equals()" aria-label="Equals">=</button>
         </div>
       </div>
       <div class="history-panel">
@@ -77,7 +77,7 @@
     <p>CalcLab — Built with precision</p>
   </footer>
 
-  <script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
     function toggleTheme() {
       const html = document.documentElement;
       if (html.getAttribute('data-theme') === 'dark') {
