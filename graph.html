@@ -9,22 +9,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <style>
-    .graph-page {
-      padding: 3rem 2rem;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-    .graph-header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .graph-header h1 {
-      font-size: 2rem;
-      margin-bottom: 0.3rem;
-    }
-    .graph-header p {
-      color: var(--text-muted);
-    }
+    .graph-page { padding: 3rem 2rem; max-width: 1000px; margin: 0 auto; }
+    .graph-header { text-align: center; margin-bottom: 2rem; }
+    .graph-header h1 { font-size: 2rem; margin-bottom: 0.3rem; }
+    .graph-header p { color: var(--text-muted); }
   </style>
 </head>
 <body>
@@ -42,27 +30,43 @@
   <main class="graph-page">
     <div class="graph-header">
       <h1>Graph Calculator</h1>
-      <p>Plot mathematical functions</p>
+      <p>Plot mathematical functions (TI-84 style)</p>
     </div>
     <div class="graph-container">
       <div class="graph-input">
-        <input type="text" id="graphFunction" placeholder="e.g., 3x+5, x^2, sin(x)" value="3x+5">
+        <input type="text" id="graphFunction" placeholder="e.g., 2X+3, X^2-4, sin(X)" value="2X+3">
         <button onclick="drawGraph()">Plot</button>
       </div>
       <canvas id="graphCanvas" width="600" height="350"></canvas>
       <div class="graph-examples">
-        <span>Try:</span>
-        <button onclick="setGraph('3x+5')">3x+5</button>
-        <button onclick="setGraph('2x-3')">2x-3</button>
-        <button onclick="setGraph('x^2-4')">x²-4</button>
-        <button onclick="setGraph('x^2')">x²</button>
-        <button onclick="setGraph('x^3')">x³</button>
-        <button onclick="setGraph('sin(x)')">sin(x)</button>
-        <button onclick="setGraph('cos(x)')">cos(x)</button>
-        <button onclick="setGraph('tan(x)')">tan(x)</button>
-        <button onclick="setGraph('1/x')">1/x</button>
-        <button onclick="setGraph('sqrt(x)')">√x</button>
-        <button onclick="setGraph('abs(x)')">|x|</button>
+        <span>Linear:</span>
+        <button onclick="setGraph('2X+3')">2X+3</button>
+        <button onclick="setGraph('3X-1')">3X-1</button>
+        <button onclick="setGraph('-X+2')">-X+2</button>
+        <span>Quadratic:</span>
+        <button onclick="setGraph('X^2')">X²</button>
+        <button onclick="setGraph('X^2-4')">X²-4</button>
+        <button onclick="setGraph('X^2-2X+1')">X²-2X+1</button>
+        <span>Cubic:</span>
+        <button onclick="setGraph('X^3')">X³</button>
+        <button onclick="setGraph('X^3-X')">X³-X</button>
+        <span>Trig:</span>
+        <button onclick="setGraph('sin(X)')">sin</button>
+        <button onclick="setGraph('cos(X)')">cos</button>
+        <button onclick="setGraph('tan(X)')">tan</button>
+        <span>Other:</span>
+        <button onclick="setGraph('1/X')">1/X</button>
+        <button onclick="setGraph('sqrt(X)')">√X</button>
+        <button onclick="setGraph('abs(X)')">|X|</button>
+        <button onclick="setGraph('e^X')">eˣ</button>
+        <button onclick="setGraph('2^X')">2ˣ</button>
+        <button onclick="setGraph('ln(X)')">ln</button>
+        <button onclick="setGraph('log(X)')">log</button>
+        <button onclick="setGraph('X^(1/3)')">∛X</button>
+        <span>Inverse:</span>
+        <button onclick="setGraph('asin(X)')">sin⁻¹</button>
+        <button onclick="setGraph('acos(X)')">cos⁻¹</button>
+        <button onclick="setGraph('atan(X)')">tan⁻¹</button>
       </div>
     </div>
   </main>
@@ -92,47 +96,91 @@
       drawGraph();
     }
 
+    function parseExpression(input) {
+      let expr = input.trim();
+      if (!expr) return 'sin(X)';
+      
+      // Remove Y=, f(X)=, = prefix
+      expr = expr.replace(/^[YFXyfx()=]+\s*=/i, '');
+      
+      // Handle negation with minus sign at start: -X -> (0-X)
+      if (expr.startsWith('-')) {
+        expr = '0' + expr;
+      }
+      
+      // Replace ^ with **
+      expr = expr.replace(/\^/g, '**');
+      
+      // Auto-add * between number and variable: 2X -> 2*X
+      expr = expr.replace(/(\d)([A-Za-z])/g, '$1*$2');
+      expr = expr.replace(/([A-Za-z])(\d)/g, '$1*$2');
+      // Auto-add * before parenthesis: 2(X) -> 2*(X)
+      expr = expr.replace(/(\d)(\()/g, '$1*$2');
+      // Auto-add * after variable: X(2) -> X*(2)
+      expr = expr.replace(/([A-Za-z])(\()/g, '$1*$2');
+      // Auto-add * between )(
+      expr = expr.replace(/\)(\()/g, ')*$1');
+      
+      // Replace constants
+      expr = expr.replace(/\bpi\b/gi, 'Math.PI');
+      expr = expr.replace(/\be\b(?![x])/gi, 'Math.E');
+      
+      // Replace math functions - order matters!
+      // Trigonometric
+      expr = expr.replace(/\bsin\b/g, 'Math.sin');
+      expr = expr.replace(/\bcos\b/g, 'Math.cos');
+      expr = expr.replace(/\btan\b/g, 'Math.tan');
+      expr = expr.replace(/\bcsc\b/g, '(1/Math.sin)');
+      expr = expr.replace(/\bsec\b/g, '(1/Math.cos)');
+      expr = expr.replace(/\bcot\b/g, '(1/Math.tan)');
+      
+      // Inverse trig
+      expr = expr.replace(/\basin\b/g, 'Math.asin');
+      expr = expr.replace(/\bacos\b/g, 'Math.acos');
+      expr = expr.replace(/\batan\b/g, 'Math.atan');
+      
+      // Roots and powers
+      expr = expr.replace(/\bsqrt\b/g, 'Math.sqrt');
+      expr = expr.replace(/\bcbrt\b/g, 'Math.cbrt');
+      expr = expr.replace(/\babs\b/g, 'Math.abs');
+      
+      // Logarithms
+      expr = expr.replace(/\bln\b/g, 'Math.log');
+      expr = expr.replace(/\blog\b(?!\d)/g, 'Math.log10');
+      expr = expr.replace(/\blog(\d+)\b/g, '(Math.log(X)/Math.log($1))');
+      
+      // Exponential
+      expr = expr.replace(/\bexp\b/g, 'Math.exp');
+      
+      // Floor/int
+      expr = expr.replace(/\bfloor\b/g, 'Math.floor');
+      expr = expr.replace(/\bint\b/g, 'Math.floor');
+      
+      // Handle e^X specially: e^X -> Math.exp(X)
+      expr = expr.replace(/\be\*\*([A-Za-zX]+)/g, 'Math.exp($1)');
+      expr = expr.replace(/\be\^([A-Za-zX]+)/g, 'Math.exp($1)');
+      
+      // Handle a^X: 2^X -> Math.pow(2, X)
+      expr = expr.replace(/\b(\d+)\*\*([A-Za-zX]+)/g, 'Math.pow($1, $2)');
+      
+      return expr;
+    }
+
     function drawGraph() {
       const canvas = document.getElementById('graphCanvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       const input = document.getElementById('graphFunction');
       if (!input) return;
-      let expr = input.value.trim() || 'sin(x)';
       
-      // Remove y= or f(x)= or = prefix if present
-      expr = expr.replace(/^[yfx\(\)]+\s*=\s*/i, '');
-      
-      // Replace ^ with ** for exponents
-      expr = expr.replace(/\^/g, '**');
-      
-      // Auto-add * between number and variable: 3x -> 3*x
-      expr = expr.replace(/(\d)([a-zA-Z])/g, '$1*$2');
-      // Auto-add * between variable and parenthesis: x(2) -> x*(2)
-      expr = expr.replace(/([a-zA-Z])(\()/g, '$1*$2');
-      // Auto-add * between ) and ( or ) and number
-      expr = expr.replace(/\)(\()/g, ')*$1');
-      expr = expr.replace(/\)(\d)/g, ')*$1');
-      expr = expr.replace(/(\d)(\()/g, '$1*$2');
-      
-      // Replace common math functions
-      expr = expr.replace(/\bsin\b/g, 'Math.sin');
-      expr = expr.replace(/\bcos\b/g, 'Math.cos');
-      expr = expr.replace(/\btan\b/g, 'Math.tan');
-      expr = expr.replace(/\bsqrt\b/g, 'Math.sqrt');
-      expr = expr.replace(/\babs\b/g, 'Math.abs');
-      expr = expr.replace(/\blog\b/g, 'Math.log10');
-      expr = expr.replace(/\bln\b/g, 'Math.log');
-      expr = expr.replace(/\bexp\b/g, 'Math.exp');
-      expr = expr.replace(/\bPI\b/gi, 'Math.PI');
-      expr = expr.replace(/\bE\b/g, 'Math.E');
-      expr = expr.replace(/\bpow\b/g, 'Math.pow');
+      const rawExpr = input.value;
+      const expr = parseExpression(rawExpr);
       
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const bg = isDark ? '#252525' : '#ebe5d9';
+      const bg = isDark ? '#252525' : '#f5f0e8';
       const fg = isDark ? '#f5f0e8' : '#1a1a1a';
       const accent = '#e63946';
-      const gridCol = isDark ? '#3a3a3a' : '#d0cbc0';
+      const gridCol = isDark ? '#3a3a3a' : '#ddd5c8';
       
       canvas.width = 600;
       canvas.height = 350;
@@ -146,11 +194,13 @@
       const centerX = w / 2;
       const centerY = h / 2;
       
+      // Grid
       ctx.strokeStyle = gridCol;
       ctx.lineWidth = 1;
       for (let x = centerX % scale; x < w; x += scale) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
       for (let y = centerY % scale; y < h; y += scale) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
       
+      // Axes
       ctx.strokeStyle = fg;
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -158,36 +208,69 @@
       ctx.moveTo(centerX, 0); ctx.lineTo(centerX, h);
       ctx.stroke();
       
+      // Axis labels
+      ctx.fillStyle = isDark ? '#888' : '#666';
+      ctx.font = '11px monospace';
+      ctx.fillText('X', w - 15, centerY - 5);
+      ctx.fillText('Y', centerX + 5, 15);
+      
       try {
-        const func = new Function('x', 'return ' + expr);
+        const func = new Function('X', 'return ' + expr);
         
         ctx.strokeStyle = accent;
         ctx.lineWidth = 2;
         ctx.beginPath();
         
         let started = false;
+        let prevY = null;
+        
         for (let px = 0; px < w; px++) {
-          const x = (px - centerX) / scale;
-          let y;
-          try { y = func(x); } catch (e) { started = false; continue; }
+          const X = (px - centerX) / scale;
+          let Y;
+          try { 
+            Y = func(X); 
+          } catch (e) { 
+            started = false;
+            continue; 
+          }
           
-          if (isFinite(y) && Math.abs(y) < 50) {
-            const py = centerY - y * scale;
-            if (py >= -10 && py <= h + 10) {
-              if (!started) { ctx.moveTo(px, py); started = true; }
-              else ctx.lineTo(px, py);
-            } else { started = false; }
-          } else { started = false; }
+          if (isFinite(Y) && Math.abs(Y) < 100) {
+            const py = centerY - Y * scale;
+            if (py >= -50 && py <= h + 50) {
+              if (!started) { 
+                ctx.moveTo(px, py); 
+                started = true; 
+              } else {
+                // Skip jumps
+                if (prevY !== null && Math.abs(py - prevY) < h) {
+                  ctx.lineTo(px, py);
+                } else {
+                  ctx.moveTo(px, py);
+                }
+              }
+              prevY = py;
+            } else {
+              started = false;
+            }
+          } else {
+            started = false;
+          }
         }
         ctx.stroke();
+        
       } catch (e) {
         ctx.fillStyle = accent;
         ctx.font = '14px monospace';
-        ctx.fillText('Invalid: ' + expr, 10, 25);
+        ctx.fillText('Error: ' + rawExpr, 10, 25);
       }
     }
 
     window.addEventListener('load', drawGraph);
+    
+    // Handle Enter key
+    document.getElementById('graphFunction').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') drawGraph();
+    });
   </script>
 </body>
 </html>
