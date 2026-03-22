@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Basic Calculator - CalcLab</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#B85C38">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -17,8 +19,8 @@
       <a href="basic.html" class="active">Basic</a>
       <a href="scientific.html">Scientific</a>
       <a href="graph.html">Graph</a>
-      <button class="theme-btn" onclick="toggleTheme()" aria-label="Toggle dark/light theme">◐</button>
-      <a href="settings.html" class="theme-btn" aria-label="Settings">⚙</a>
+      <button class="theme-btn" onclick="toggleTheme()">◐</button>
+      <a href="settings.html" class="theme-btn">⚙</a>
     </nav>
   </header>
 
@@ -31,43 +33,43 @@
       <div class="calc-wrapper">
         <div class="calc-display">
           <div class="display-toolbar">
-            <button class="toolbar-btn" onclick="calc.copyResult()" title="Copy result">📋</button>
-            <button class="toolbar-btn" onclick="calc.clearHistory()" title="Clear history">🗑️</button>
+            <button class="toolbar-btn" onclick="copyResult()" title="Copy">📋</button>
+            <button class="toolbar-btn" onclick="clearHistory()" title="Clear history">🗑️</button>
           </div>
           <div class="expression" id="expr"></div>
           <div class="result" id="result">0</div>
           <div class="memory-indicator" id="memIndicator"></div>
         </div>
         <div class="calc-buttons">
-          <button class="calc-btn func" onclick="calc.memoryClear()" title="Memory Clear" aria-label="Memory Clear">MC</button>
-          <button class="calc-btn func" onclick="calc.memoryRecall()" title="Memory Recall" aria-label="Memory Recall">MR</button>
-          <button class="calc-btn func" onclick="calc.memoryAdd()" title="Memory Add" aria-label="Memory Add">M+</button>
-          <button class="calc-btn func" onclick="calc.memorySub()" title="Memory Subtract" aria-label="Memory Subtract">M-</button>
-          <button class="calc-btn clear" onclick="calc.clearAll()" aria-label="Clear All">C</button>
-          <button class="calc-btn" onclick="calc.clearEntry()" aria-label="Clear Entry">CE</button>
-          <button class="calc-btn" onclick="calc.backspace()" aria-label="Backspace">⌫</button>
-          <button class="calc-btn" onclick="calc.operator('%')" aria-label="Percent">%</button>
-          <button class="calc-btn operator" onclick="calc.operator('/')" aria-label="Divide">÷</button>
-          <button class="calc-btn" onclick="calc.number('7')" aria-label="Seven">7</button>
-          <button class="calc-btn" onclick="calc.number('8')" aria-label="Eight">8</button>
-          <button class="calc-btn" onclick="calc.number('9')" aria-label="Nine">9</button>
-          <button class="calc-btn operator" onclick="calc.operator('*')" aria-label="Multiply">×</button>
-          <button class="calc-btn" onclick="calc.number('4')" aria-label="Four">4</button>
-          <button class="calc-btn" onclick="calc.number('5')" aria-label="Five">5</button>
-          <button class="calc-btn" onclick="calc.number('6')" aria-label="Six">6</button>
-          <button class="calc-btn operator" onclick="calc.operator('-')" aria-label="Subtract">−</button>
-          <button class="calc-btn" onclick="calc.number('1')" aria-label="One">1</button>
-          <button class="calc-btn" onclick="calc.number('2')" aria-label="Two">2</button>
-          <button class="calc-btn" onclick="calc.number('3')" aria-label="Three">3</button>
-          <button class="calc-btn operator" onclick="calc.operator('+')" aria-label="Add">+</button>
-          <button class="calc-btn" onclick="calc.number('0')" aria-label="Zero">0</button>
-          <button class="calc-btn" onclick="calc.decimal()" aria-label="Decimal">.</button>
-          <button class="calc-btn" onclick="calc.toggleSign()" aria-label="Toggle Sign">±</button>
-          <button class="calc-btn equals" onclick="calc.equals()" aria-label="Equals">=</button>
+          <button class="calc-btn func" onclick="memoryClear()" aria-label="Memory Clear">MC</button>
+          <button class="calc-btn func" onclick="memoryRecall()" aria-label="Memory Recall">MR</button>
+          <button class="calc-btn func" onclick="memoryAdd()" aria-label="Memory Add">M+</button>
+          <button class="calc-btn func" onclick="memorySub()" aria-label="Memory Subtract">M-</button>
+          <button class="calc-btn clear" onclick="clearAll()" aria-label="Clear All">C</button>
+          <button class="calc-btn" onclick="clearEntry()" aria-label="Clear Entry">CE</button>
+          <button class="calc-btn" onclick="backspace()" aria-label="Backspace">⌫</button>
+          <button class="calc-btn" onclick="operator('%')" aria-label="Percent">%</button>
+          <button class="calc-btn operator" onclick="operator('/')" aria-label="Divide">÷</button>
+          <button class="calc-btn" onclick="digit('7')" aria-label="Seven">7</button>
+          <button class="calc-btn" onclick="digit('8')" aria-label="Eight">8</button>
+          <button class="calc-btn" onclick="digit('9')" aria-label="Nine">9</button>
+          <button class="calc-btn operator" onclick="operator('*')" aria-label="Multiply">×</button>
+          <button class="calc-btn" onclick="digit('4')" aria-label="Four">4</button>
+          <button class="calc-btn" onclick="digit('5')" aria-label="Five">5</button>
+          <button class="calc-btn" onclick="digit('6')" aria-label="Six">6</button>
+          <button class="calc-btn operator" onclick="operator('-')" aria-label="Subtract">−</button>
+          <button class="calc-btn" onclick="digit('1')" aria-label="One">1</button>
+          <button class="calc-btn" onclick="digit('2')" aria-label="Two">2</button>
+          <button class="calc-btn" onclick="digit('3')" aria-label="Three">3</button>
+          <button class="calc-btn operator" onclick="operator('+')" aria-label="Add">+</button>
+          <button class="calc-btn" onclick="digit('0')" aria-label="Zero">0</button>
+          <button class="calc-btn" onclick="decimal()" aria-label="Decimal">.</button>
+          <button class="calc-btn" onclick="toggleSign()" aria-label="Toggle Sign">±</button>
+          <button class="calc-btn equals" onclick="equals()" aria-label="Equals">=</button>
         </div>
       </div>
       <div class="history-panel">
-        <h3>History <button onclick="calc.clearHistory()">Clear</button></h3>
+        <h3>History <button onclick="clearHistory()">Clear</button></h3>
         <div id="history"></div>
       </div>
     </div>
@@ -78,6 +80,13 @@
   </footer>
 
   <script>
+    let current = '0';
+    let expression = '';
+    let memory = 0;
+    let lastOp = null;
+    let lastNum = null;
+    let justEqualed = false;
+
     function toggleTheme() {
       const html = document.documentElement;
       if (html.getAttribute('data-theme') === 'dark') {
@@ -92,219 +101,277 @@
       document.documentElement.setAttribute('data-theme', 'dark');
     }
 
-    const calc = {
-      current: '0',
-      expr: '',
-      memory: 0,
-      lastOp: null,
-      lastNum: '0',
-      
-      update() {
-        document.getElementById('result').textContent = this.current;
-        document.getElementById('expr').textContent = this.expr;
-        document.getElementById('memIndicator').textContent = this.memory !== 0 ? `M: ${this.memory}` : '';
-      },
-      
-      number(n) {
-        if (this.current === '0' || this.current === 'Error') this.current = n;
-        else if (this.current.length < 15) this.current += n;
-        this.update();
-      },
-      
-      decimal() {
-        if (this.current === 'Error') this.current = '0';
-        if (!this.current.includes('.')) this.current += '.';
-        this.update();
-      },
-      
-      operator(op) {
-        if (op === '%') {
-          if (this.current === 'Error') return;
-          const val = parseFloat(this.current) / 100;
-          this.current = this.formatResult(val);
-          this.update();
-        } else {
-          if (this.current !== '0' && this.current !== '' && this.current !== 'Error') {
-            this.lastOp = op;
-            this.lastNum = this.current;
-          } else if (this.lastOp) {
-            this.lastOp = op;
-            this.expr = this.expr.trim().replace(/ [\+\-\*\/%]$/, ' ' + op + ' ');
-          }
-          this.expr += this.current + ' ' + op + ' ';
-          this.current = '0';
-          this.update();
-        }
-      },
-      
-      clearAll() {
-        this.current = '0';
-        this.expr = '';
-        this.lastOp = null;
-        this.update();
-      },
-      
-      clearEntry() {
-        this.current = '0';
-        this.update();
-      },
-      
-      backspace() {
-        if (this.current.length === 1 || this.current === 'Error') this.current = '0';
-        else this.current = this.current.slice(0, -1);
-        this.update();
-      },
-      
-      toggleSign() {
-        if (this.current !== '0' && this.current !== 'Error') {
-          this.current = this.current.startsWith('-') ? this.current.slice(1) : '-' + this.current;
-        }
-        this.update();
-      },
-      
-      memoryClear() {
-        this.memory = 0;
-        this.update();
-      },
-      
-      memoryRecall() {
-        if (this.memory !== 0) {
-          if (this.current === '0' || this.current === 'Error') this.current = String(this.memory);
-          else this.current += String(this.memory);
-        }
-        this.update();
-      },
-      
-      memoryAdd() {
-        const val = parseFloat(this.current);
-        if (!isNaN(val) && this.current !== 'Error') {
-          this.memory += val;
-          this.current = '0';
-        }
-        this.update();
-      },
-      
-      memorySub() {
-        const val = parseFloat(this.current);
-        if (!isNaN(val) && this.current !== 'Error') {
-          this.memory -= val;
-          this.current = '0';
-        }
-        this.update();
-      },
-      
-      copyResult() {
-        const result = this.current === 'Error' ? '0' : this.current;
-        navigator.clipboard.writeText(result).then(() => {
-          const btn = document.querySelector('.toolbar-btn');
-          btn.textContent = '✓';
-          setTimeout(() => btn.textContent = '📋', 1000);
-        });
-      },
-      
-      equals() {
-        try {
-          let fullExpr = this.expr + this.current;
-          if (!fullExpr.trim()) return;
-          
-          const result = this.safeEval(fullExpr);
-          if (!isFinite(result)) throw new Error('Division by zero');
-          
-          this.addHistory(fullExpr, result);
-          this.lastNum = this.current;
-          this.current = this.formatResult(result);
-          this.expr = '';
-        } catch (e) {
-          this.current = 'Error';
-        }
-        this.update();
-      },
-      
-      safeEval(expr) {
-        let e = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/π/g, Math.PI).replace(/\^/g, '**');
-        return Function('"use strict";return (' + e + ')')();
-      },
-      
-      formatResult(num) {
-        if (Math.abs(num) < 0.0000000001) return '0';
-        if (!isFinite(num)) return 'Error';
-        const rounded = Math.round(num * 1e10) / 1e10;
-        if (Math.abs(rounded) > 1e10 || (Math.abs(rounded) < 1e-6 && rounded !== 0)) {
-          return rounded.toExponential(6);
-        }
-        return String(rounded);
-      },
-      
-      repeatEquals() {
-        if (this.lastOp && this.lastNum) {
-          try {
-            const fullExpr = this.current + ' ' + this.lastOp + ' ' + this.lastNum;
-            const result = Function('"use strict";return (' + fullExpr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-') + ')')();
-            if (!isFinite(result)) throw new Error();
-            this.addHistory(fullExpr, result);
-            this.current = String(Math.round(result * 1e10) / 1e10);
-          } catch (e) {
-            this.current = 'Error';
-          }
-          this.update();
-        }
-      },
-      
-      addHistory(expr, result) {
-        const hist = JSON.parse(localStorage.getItem('basicHistory') || '[]');
-        hist.unshift({ expr, result: String(result), time: Date.now() });
-        if (hist.length > 50) hist.pop();
-        localStorage.setItem('basicHistory', JSON.stringify(hist));
-        renderHistory(hist);
-      },
-      
-      clearHistory() {
-        if (confirm('Clear all history?')) {
-          localStorage.removeItem('basicHistory');
-          renderHistory([]);
-        }
-      },
-      
-      deleteHistory(time) {
-        const hist = JSON.parse(localStorage.getItem('basicHistory') || '[]');
-        const filtered = hist.filter(h => h.time !== time);
-        localStorage.setItem('basicHistory', JSON.stringify(filtered));
-        renderHistory(filtered);
-      }
-    };
+    function update() {
+      document.getElementById('result').textContent = current;
+      document.getElementById('expr').textContent = expression;
+      document.getElementById('memIndicator').textContent = memory !== 0 ? `M: ${formatNum(memory)}` : '';
+    }
 
-    function renderHistory(hist) {
+    function formatNum(n) {
+      if (!isFinite(n)) return 'Error';
+      const str = String(n);
+      if (str.length > 12) {
+        return n.toExponential(6);
+      }
+      return str;
+    }
+
+    function digit(d) {
+      playClick();
+      if (justEqualed) {
+        current = d;
+        expression = '';
+        justEqualed = false;
+      } else if (current === '0' || current === 'Error') {
+        current = d;
+      } else if (current.length < 15) {
+        current += d;
+      }
+      update();
+    }
+
+    function decimal() {
+      playClick();
+      if (justEqualed) {
+        current = '0.';
+        expression = '';
+        justEqualed = false;
+      } else if (!current.includes('.')) {
+        current += '.';
+      }
+      update();
+    }
+
+    function operator(op) {
+      playClick();
+      if (op === '%') {
+        const val = parseFloat(current);
+        if (!isNaN(val)) {
+          current = String(val / 100);
+        }
+        update();
+        return;
+      }
+      
+      const num = parseFloat(current);
+      if (lastOp && lastNum !== null && !justEqualed) {
+        try {
+          const result = evaluate(lastNum, num, lastOp);
+          current = String(result);
+          expression = formatNum(result) + ' ' + displayOp(op);
+        } catch (e) {
+          current = 'Error';
+          expression = '';
+        }
+      } else {
+        expression = current + ' ' + displayOp(op);
+      }
+      
+      lastOp = op;
+      lastNum = parseFloat(current);
+      justEqualed = false;
+      update();
+    }
+
+    function displayOp(op) {
+      return op === '*' ? '×' : op === '/' ? '÷' : op;
+    }
+
+    function evaluate(a, b, op) {
+      switch (op) {
+        case '+': return a + b;
+        case '-': return a - b;
+        case '*': return a * b;
+        case '/': 
+          if (b === 0) throw new Error('Division by zero');
+          return a / b;
+        default: return b;
+      }
+    }
+
+    function equals() {
+      playClick();
+      if (lastOp && lastNum !== null) {
+        const num = parseFloat(current);
+        try {
+          const result = evaluate(lastNum, num, lastOp);
+          const fullExpr = formatNum(lastNum) + ' ' + displayOp(lastOp) + ' ' + current + ' =';
+          addHistory(fullExpr, result);
+          current = String(result);
+          expression = '';
+          lastOp = null;
+          lastNum = null;
+          justEqualed = true;
+        } catch (e) {
+          current = 'Error';
+          expression = '';
+        }
+      }
+      update();
+    }
+
+    function clearAll() {
+      playClick();
+      current = '0';
+      expression = '';
+      lastOp = null;
+      lastNum = null;
+      justEqualed = false;
+      update();
+    }
+
+    function clearEntry() {
+      playClick();
+      current = '0';
+      justEqualed = false;
+      update();
+    }
+
+    function backspace() {
+      playClick();
+      if (current.length === 1 || current === 'Error') {
+        current = '0';
+      } else {
+        current = current.slice(0, -1);
+      }
+      update();
+    }
+
+    function toggleSign() {
+      playClick();
+      if (current !== '0' && current !== 'Error') {
+        current = current.startsWith('-') ? current.slice(1) : '-' + current;
+      }
+      update();
+    }
+
+    function memoryClear() {
+      playClick();
+      memory = 0;
+      update();
+    }
+
+    function memoryRecall() {
+      playClick();
+      if (memory !== 0) {
+        current = String(memory);
+        justEqualed = false;
+      }
+      update();
+    }
+
+    function memoryAdd() {
+      playClick();
+      const val = parseFloat(current);
+      if (!isNaN(val)) {
+        memory += val;
+      }
+      update();
+    }
+
+    function memorySub() {
+      playClick();
+      const val = parseFloat(current);
+      if (!isNaN(val)) {
+        memory -= val;
+      }
+      update();
+    }
+
+    function copyResult() {
+      const result = current === 'Error' ? '0' : current;
+      navigator.clipboard.writeText(result).then(() => {
+        const btn = document.querySelector('.toolbar-btn');
+        btn.textContent = '✓';
+        setTimeout(() => btn.textContent = '📋', 1000);
+      });
+    }
+
+    function addHistory(expr, result) {
+      const hist = JSON.parse(localStorage.getItem('basicHistory') || '[]');
+      hist.unshift({ expr, result: String(result), time: Date.now() });
+      if (hist.length > 50) hist.pop();
+      localStorage.setItem('basicHistory', JSON.stringify(hist));
+      renderHistory();
+    }
+
+    function clearHistory() {
+      if (confirm('Clear all history?')) {
+        localStorage.removeItem('basicHistory');
+        renderHistory();
+      }
+    }
+
+    function deleteHistory(time) {
+      const hist = JSON.parse(localStorage.getItem('basicHistory') || '[]');
+      const filtered = hist.filter(h => h.time !== time);
+      localStorage.setItem('basicHistory', JSON.stringify(filtered));
+      renderHistory();
+    }
+
+    function recall(val) {
+      current = val;
+      justEqualed = false;
+      update();
+    }
+
+    function renderHistory() {
       const el = document.getElementById('history');
-      if (!el) return;
+      const hist = JSON.parse(localStorage.getItem('basicHistory') || '[]');
       if (hist.length === 0) {
-        el.innerHTML = '<div style="color: var(--text-muted); font-size: 0.8rem;">No calculations yet</div>';
+        el.innerHTML = '<div style="color:var(--text-muted);font-size:0.8rem;padding:0.5rem;">No calculations yet</div>';
         return;
       }
       el.innerHTML = hist.slice(0, 20).map(item => `
         <div class="history-item">
           <div class="expr" onclick="recall('${item.result}')">${item.expr}</div>
           <div class="result" onclick="recall('${item.result}')">= ${item.result}</div>
-          <button class="hist-del" onclick="calc.deleteHistory(${item.time})">×</button>
+          <button class="hist-del" onclick="event.stopPropagation();deleteHistory(${item.time})">×</button>
         </div>
       `).join('');
     }
 
-    function recall(val) {
-      calc.current = val;
-      calc.update();
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.textContent = msg;
+      toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:0.5rem 1rem;border-radius:6px;font-family:var(--mono);font-size:0.75rem;z-index:1000;';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
     }
 
-    renderHistory(JSON.parse(localStorage.getItem('basicHistory') || '[]'));
+    // Audio
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playClick() {
+      if (localStorage.getItem('soundEnabled') === 'true') {
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.frequency.value = 600;
+          gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.05);
+        } catch (e) {}
+      }
+    }
 
+    // Keyboard
     document.addEventListener('keydown', (e) => {
-      if (e.key >= '0' && e.key <= '9') calc.number(e.key);
-      if (e.key === '.') calc.decimal();
-      if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/' || e.key === '%') calc.operator(e.key);
-      if (e.key === 'Enter' || e.key === '=') calc.equals();
-      if (e.key === 'Escape') calc.clearAll();
-      if (e.key === 'Backspace') calc.backspace();
+      if (e.key >= '0' && e.key <= '9') digit(e.key);
+      if (e.key === '.') decimal();
+      if (e.key === '+' || e.key === '-') operator(e.key);
+      if (e.key === '*' || e.key === '/') operator(e.key);
+      if (e.key === '%') operator('%');
+      if (e.key === 'Enter' || e.key === '=') equals();
+      if (e.key === 'Escape') clearAll();
+      if (e.key === 'Backspace') backspace();
+      if (e.key === '(' || e.key === ')') {} // Ignore
     });
 
+    renderHistory();
+    update();
   </script>
 </body>
 </html>

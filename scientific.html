@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Scientific Calculator - CalcLab</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#B85C38">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -18,7 +20,7 @@
       <a href="scientific.html" class="active">Scientific</a>
       <a href="graph.html">Graph</a>
       <button class="theme-btn" onclick="toggleTheme()">◐</button>
-      <a href="settings.html" class="theme-btn" title="Settings">⚙</a>
+      <a href="settings.html" class="theme-btn">⚙</a>
     </nav>
   </header>
 
@@ -27,90 +29,92 @@
       <h1>Scientific Calculator</h1>
       <p>Advanced mathematical functions</p>
       <div class="mode-toggle">
-        <button class="active" id="radBtn" onclick="calc.setAngle('RAD')">RAD</button>
-        <button id="degBtn" onclick="calc.setAngle('DEG')">DEG</button>
-        <button id="gradBtn" onclick="calc.setAngle('GRAD')">GRAD</button>
+        <button id="degBtn" onclick="setAngle('DEG')">DEG</button>
+        <button id="radBtn" class="active" onclick="setAngle('RAD')">RAD</button>
+        <button id="gradBtn" onclick="setAngle('GRAD')">GRAD</button>
       </div>
     </div>
     <div class="calculator-container">
       <div class="calc-wrapper">
         <div class="calc-display">
           <div class="display-toolbar">
-            <button class="toolbar-btn" onclick="calc.copyResult()" title="Copy result">📋</button>
-            <button class="toolbar-btn" onclick="calc.clearHistory()" title="Clear history">🗑️</button>
+            <button class="toolbar-btn" onclick="copyResult()" title="Copy">📋</button>
+            <button class="toolbar-btn" onclick="clearHistory()" title="Clear history">🗑️</button>
           </div>
           <div class="expression" id="expr"></div>
           <div class="result" id="result">0</div>
           <div class="memory-indicator" id="memIndicator"></div>
         </div>
-<div class="calc-buttons scientific">
-          <button class="calc-btn func" onclick="calc.memoryClear()" title="Memory Clear">MC</button>
-          <button class="calc-btn func" onclick="calc.memoryRecall()" title="Memory Recall">MR</button>
-          <button class="calc-btn func" onclick="calc.memoryAdd()" title="Memory Add">M+</button>
-          <button class="calc-btn func" onclick="calc.memorySub()" title="Memory Subtract">M-</button>
-          <button class="calc-btn clear" onclick="calc.clear()">C</button>
-          <button class="calc-btn" onclick="calc.clearEntry()">CE</button>
-          <button class="calc-btn" onclick="calc.backspace()">⌫</button>
-          <button class="calc-btn func" onclick="calc.input('(')">(</button>
-          <button class="calc-btn func" onclick="calc.input(')')">)</button>
-          <button class="calc-btn func" onclick="showConstants()">∇</button>
+        <div class="calc-buttons scientific">
+          <button class="calc-btn func" onclick="memoryClear()">MC</button>
+          <button class="calc-btn func" onclick="memoryRecall()">MR</button>
+          <button class="calc-btn func" onclick="memoryAdd()">M+</button>
+          <button class="calc-btn func" onclick="memorySub()">M-</button>
+          <button class="calc-btn clear" onclick="clearAll()">C</button>
+          <button class="calc-btn" onclick="clearEntry()">CE</button>
+          <button class="calc-btn" onclick="backspace()">⌫</button>
+          <button class="calc-btn func" onclick="input('(')">(</button>
+          <button class="calc-btn func" onclick="input(')')">)</button>
           
-          <button class="calc-btn func" onclick="calc.func('sin')">sin</button>
-          <button class="calc-btn func" onclick="calc.func('cos')">cos</button>
-          <button class="calc-btn func" onclick="calc.func('tan')">tan</button>
-          <button class="calc-btn func" onclick="calc.func('sinh')">sinh</button>
-          <button class="calc-btn func" onclick="calc.func('sqrt')">√</button>
-          <button class="calc-btn func" onclick="calc.func('sq')">x²</button>
-          <button class="calc-btn func" onclick="calc.func('cube')">x³</button>
-          <button class="calc-btn operator" onclick="calc.operator('/')">÷</button>
+          <button class="calc-btn func" onclick="sciFunc('sin')">sin</button>
+          <button class="calc-btn func" onclick="sciFunc('cos')">cos</button>
+          <button class="calc-btn func" onclick="sciFunc('tan')">tan</button>
+          <button class="calc-btn func" onclick="sciFunc('asin')">sin⁻¹</button>
+          <button class="calc-btn func" onclick="sciFunc('sqrt')">√</button>
+          <button class="calc-btn func" onclick="sciFunc('sq')">x²</button>
+          <button class="calc-btn func" onclick="sciFunc('pow')">xʸ</button>
+          <button class="calc-btn operator" onclick="operator('/')">÷</button>
           
-          <button class="calc-btn func" onclick="calc.func('asin')">asin</button>
-          <button class="calc-btn func" onclick="calc.func('acos')">acos</button>
-          <button class="calc-btn func" onclick="calc.func('atan')">atan</button>
-          <button class="calc-btn func" onclick="calc.func('cosh')">cosh</button>
-          <button class="calc-btn func" onclick="calc.func('cbrt')">∛</button>
-          <button class="calc-btn func" onclick="calc.func('inv')">1/x</button>
-          <button class="calc-btn func" onclick="calc.func('floor')">floor</button>
-          <button class="calc-btn operator" onclick="calc.operator('-')">−</button>
+          <button class="calc-btn func" onclick="sciFunc('asin')">cos⁻¹</button>
+          <button class="calc-btn func" onclick="sciFunc('acos')">acos</button>
+          <button class="calc-btn func" onclick="sciFunc('atan')">tan⁻¹</button>
+          <button class="calc-btn func" onclick="sciFunc('cbrt')">∛</button>
+          <button class="calc-btn func" onclick="sciFunc('abs')">|x|</button>
+          <button class="calc-btn func" onclick="sciFunc('inv')">1/x</button>
+          <button class="calc-btn func" onclick="sciFunc('fact')">n!</button>
+          <button class="calc-btn operator" onclick="operator('-')">−</button>
           
-          <button class="calc-btn func" onclick="calc.func('log')">log</button>
-          <button class="calc-btn func" onclick="calc.func('ln')">ln</button>
-          <button class="calc-btn func" onclick="calc.func('pow')">xⁿ</button>
-          <button class="calc-btn func" onclick="calc.func('tanh')">tanh</button>
-          <button class="calc-btn func" onclick="calc.func('pi')">π</button>
-          <button class="calc-btn func" onclick="calc.func('e')">e</button>
-          <button class="calc-btn func" onclick="calc.func('ceil')">ceil</button>
-          <button class="calc-btn operator" onclick="calc.operator('+')">+</button>
+          <button class="calc-btn func" onclick="sciFunc('log')">log</button>
+          <button class="calc-btn func" onclick="sciFunc('ln')">ln</button>
+          <button class="calc-btn func" onclick="sciFunc('exp')">eˣ</button>
+          <button class="calc-btn func" onclick="sciFunc('10x')">10ˣ</button>
+          <button class="calc-btn func" onclick="inputPi()">π</button>
+          <button class="calc-btn func" onclick="inputE()">e</button>
+          <button class="calc-btn func" onclick="sciFunc('floor')">⌊⌋</button>
+          <button class="calc-btn operator" onclick="operator('+')">+</button>
           
-          <button class="calc-btn" onclick="calc.number('7')">7</button>
-          <button class="calc-btn" onclick="calc.number('8')">8</button>
-          <button class="calc-btn" onclick="calc.number('9')">9</button>
-          <button class="calc-btn func" onclick="calc.func('asinh')">asinh</button>
-          <button class="calc-btn func" onclick="calc.func('fact')">n!</button>
-          <button class="calc-btn func" onclick="calc.func('rand')">rand</button>
-          <button class="calc-btn func" onclick="calc.func('round')">round</button>
-          <button class="calc-btn equals" onclick="calc.equals()">=</button>
+          <button class="calc-btn" onclick="digit('7')">7</button>
+          <button class="calc-btn" onclick="digit('8')">8</button>
+          <button class="calc-btn" onclick="digit('9')">9</button>
+          <button class="calc-btn func" onclick="sciFunc('sinh')">sinh</button>
+          <button class="calc-btn func" onclick="sciFunc('asinh')">sinh⁻¹</button>
+          <button class="calc-btn func" onclick="sciFunc('round')">rnd</button>
+          <button class="calc-btn func" onclick="sciFunc('rand')">rand</button>
+          <button class="calc-btn equals" onclick="equals()">=</button>
           
-          <button class="calc-btn" onclick="calc.number('4')">4</button>
-          <button class="calc-btn" onclick="calc.number('5')">5</button>
-          <button class="calc-btn" onclick="calc.number('6')">6</button>
-          <button class="calc-btn func" onclick="calc.func('acosh')">acosh</button>
-          <button class="calc-btn func" onclick="calc.func('abs')">|x|</button>
-          <button class="calc-btn func" onclick="calc.insertAns()" title="Last answer">ANS</button>
-          <button class="calc-btn func" onclick="calc.input('e')">EE</button>
+          <button class="calc-btn" onclick="digit('4')">4</button>
+          <button class="calc-btn" onclick="digit('5')">5</button>
+          <button class="calc-btn" onclick="digit('6')">6</button>
+          <button class="calc-btn func" onclick="sciFunc('cosh')">cosh</button>
+          <button class="calc-btn func" onclick="sciFunc('acosh')">cosh⁻¹</button>
+          <button class="calc-btn func" onclick="sciFunc('ceil')">⌈⌉</button>
+          <button class="calc-btn func" onclick="insertAns()">ANS</button>
           
-          <button class="calc-btn" onclick="calc.number('1')">1</button>
-          <button class="calc-btn" onclick="calc.number('2')">2</button>
-          <button class="calc-btn" onclick="calc.number('3')">3</button>
-          <button class="calc-btn func" onclick="calc.func('atanh')">atanh</button>
-          <button class="calc-btn" onclick="calc.decimal()">.</button>
-          <button class="calc-btn func" onclick="calc.func('exp')">eˣ</button>
-          <button class="calc-btn func" onclick="showBaseConverter()">BASE</button>
-          <button class="calc-btn func" onclick="showStats()" title="Statistics">Σ</button>
+          <button class="calc-btn" onclick="digit('1')">1</button>
+          <button class="calc-btn" onclick="digit('2')">2</button>
+          <button class="calc-btn" onclick="digit('3')">3</button>
+          <button class="calc-btn func" onclick="sciFunc('tanh')">tanh</button>
+          <button class="calc-btn func" onclick="sciFunc('atanh')">tanh⁻¹</button>
+          <button class="calc-btn" onclick="decimal()">.</button>
+          <button class="calc-btn func" onclick="sciFunc('mod')">mod</button>
+          
+          <button class="calc-btn" onclick="digit('0')">0</button>
+          <button class="calc-btn" onclick="toggleSign()">±</button>
+          <button class="calc-btn func" onclick="sciFunc('pct')">%</button>
         </div>
       </div>
       <div class="history-panel">
-        <h3>History <button onclick="calc.clearHistory()">Clear</button></h3>
+        <h3>History <button onclick="clearHistory()">Clear</button></h3>
         <div id="history"></div>
       </div>
     </div>
@@ -120,207 +124,13 @@
     <p>CalcLab — Built with precision</p>
   </footer>
 
-  <div id="constantsModal" class="modal" style="display:none;">
-    <div class="modal-content">
-      <span class="modal-close" onclick="closeConstants()">&times;</span>
-      <h3>Constants</h3>
-      <div class="const-tabs">
-        <button class="active" onclick="showConstGroup('math')">Math</button>
-        <button onclick="showConstGroup('physics')">Physics</button>
-        <button onclick="showConstGroup('chemistry')">Chemistry</button>
-      </div>
-      <div id="constList" class="const-list"></div>
-    </div>
-  </div>
-
-  <div id="baseModal" class="modal" style="display:none;">
-    <div class="modal-content">
-      <span class="modal-close" onclick="closeBaseConverter()">&times;</span>
-      <h3>Base Converter</h3>
-      <input type="text" id="baseInput" class="base-input" placeholder="Enter number" oninput="convertBase()">
-      <div class="base-results">
-        <div class="base-row"><span>DEC</span><input type="text" id="baseDec" readonly></div>
-        <div class="base-row"><span>BIN</span><input type="text" id="baseBin" readonly></div>
-        <div class="base-row"><span>OCT</span><input type="text" id="baseOct" readonly></div>
-        <div class="base-row"><span>HEX</span><input type="text" id="baseHex" readonly></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="statsModal" class="modal" style="display:none;">
-    <div class="modal-content" style="max-width:500px;">
-      <span class="modal-close" onclick="closeStats()">&times;</span>
-      <h3>Statistics</h3>
-      <textarea id="statsData" class="stats-input" placeholder="Enter numbers (one per line or comma separated)" rows="4"></textarea>
-      <button onclick="calcStats()" class="stats-btn">Calculate</button>
-      <div id="statsResults" class="stats-results"></div>
-    </div>
-  </div>
-
-  <style>
-    .base-input { width:100%; padding:0.8rem; font-family:var(--mono); font-size:1.2rem; border:2px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); margin-bottom:1rem; }
-    .base-results { display:grid; gap:0.5rem; }
-    .base-row { display:flex; align-items:center; gap:0.5rem; }
-    .base-row span { font-family:var(--mono); font-weight:700; width:40px; color:var(--accent); }
-    .base-row input { flex:1; padding:0.5rem; font-family:var(--mono); border:1px solid var(--border); border-radius:4px; background:var(--bg); color:var(--text); }
-    .calc-btn.active { box-shadow:inset 0 0 0 2px var(--accent); }
-    .stats-input { width:100%; padding:0.8rem; font-family:var(--mono); font-size:1rem; border:2px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); resize:vertical; margin-bottom:0.5rem; }
-    .stats-btn { padding:0.6rem 1.2rem; background:var(--accent); color:#fff; border:2px solid var(--border); border-radius:6px; cursor:pointer; font-family:var(--mono); }
-    .stats-results { margin-top:1rem; display:grid; gap:0.3rem; }
-    .stat-row { display:flex; justify-content:space-between; padding:0.4rem; border-bottom:1px solid var(--border); }
-    .stat-row span:first-child { color:var(--text-muted); }
-    .stat-row span:last-child { font-family:var(--mono); font-weight:700; color:var(--accent); }
-  </style>
-
   <script>
-    const constGroups = {
-      math: [
-        { sym: 'π', val: Math.PI, name: 'Pi' },
-        { sym: 'e', val: Math.E, name: 'Euler number' },
-        { sym: 'φ', val: 1.6180339887498948482, name: 'Golden ratio' },
-        { sym: '√2', val: Math.SQRT2, name: 'Square root of 2' },
-        { sym: '√3', val: Math.sqrt(3), name: 'Square root of 3' },
-        { sym: 'ln2', val: Math.LN2, name: 'Natural log of 2' },
-        { sym: 'ln10', val: Math.LN10, name: 'Natural log of 10' },
-      ],
-      physics: [
-        { sym: 'c', val: 299792458, name: 'Speed of light (m/s)' },
-        { sym: 'G', val: 6.67430e-11, name: 'Gravitational constant' },
-        { sym: 'h', val: 6.62607015e-34, name: 'Planck constant' },
-        { sym: 'ℏ', val: 1.054571817e-34, name: 'Reduced Planck' },
-        { sym: 'k', val: 1.380649e-23, name: 'Boltzmann constant' },
-        { sym: 'g', val: 9.80665, name: 'Standard gravity' },
-        { sym: 'e⁻', val: 1.602176634e-19, name: 'Electron charge' },
-      ],
-      chemistry: [
-        { sym: 'Nₐ', val: 6.02214076e23, name: 'Avogadro number' },
-        { sym: 'R', val: 8.314462618, name: 'Gas constant (J/mol·K)' },
-        { sym: 'F', val: 96485.33212, name: 'Faraday constant' },
-        { sym: 'atm', val: 101325, name: 'Atmosphere (Pa)' },
-        { sym: 'cal', val: 4.184, name: 'Calorie (J)' },
-      ],
-    };
-
-    function showConstants() {
-      document.getElementById('constantsModal').style.display = 'flex';
-      showConstGroup('math');
-    }
-
-    function closeConstants() {
-      document.getElementById('constantsModal').style.display = 'none';
-    }
-
-    function showConstGroup(group) {
-      document.querySelectorAll('.const-tabs button').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
-      const list = document.getElementById('constList');
-      list.innerHTML = constGroups[group].map(c => `
-        <div class="const-row" onclick="insertConstant(${c.val}, '${c.sym}')">
-          <span>${c.sym}</span>
-          <span>${c.name}</span>
-        </div>
-      `).join('');
-    }
-
-    function insertConstant(val, sym) {
-      calc.current = String(val);
-      calc.update();
-      closeConstants();
-    }
-
-    function showBaseConverter() {
-      document.getElementById('baseModal').style.display = 'flex';
-      document.getElementById('baseInput').focus();
-    }
-
-    function closeBaseConverter() {
-      document.getElementById('baseModal').style.display = 'none';
-    }
-
-    function showStats() {
-      document.getElementById('statsModal').style.display = 'flex';
-      document.getElementById('statsData').focus();
-    }
-
-    function closeStats() {
-      document.getElementById('statsModal').style.display = 'none';
-    }
-
-    function calcStats() {
-      const input = document.getElementById('statsData').value;
-      const nums = input.split(/[\s,]+/).filter(s => s).map(Number).filter(n => !isNaN(n));
-      
-      if (nums.length === 0) {
-        document.getElementById('statsResults').innerHTML = '<p style="color:var(--text-muted)">Enter valid numbers</p>';
-        return;
-      }
-
-      const n = nums.length;
-      const sum = nums.reduce((a, b) => a + b, 0);
-      const mean = sum / n;
-      const sorted = [...nums].sort((a, b) => a - b);
-      const median = n % 2 === 0 ? (sorted[n/2-1] + sorted[n/2]) / 2 : sorted[Math.floor(n/2)];
-      
-      const counts = {};
-      nums.forEach(x => counts[x] = (counts[x] || 0) + 1);
-      const maxCount = Math.max(...Object.values(counts));
-      const modes = Object.keys(counts).filter(k => counts[k] === maxCount).map(Number);
-      const mode = modes.length === n ? null : modes[0];
-      
-      const variance = nums.reduce((a, b) => a + (b - mean) ** 2, 0) / n;
-      const stdDev = Math.sqrt(variance);
-      const sampleStd = Math.sqrt(nums.reduce((a, b) => a + (b - mean) ** 2, 0) / (n - 1));
-      const min = Math.min(...nums);
-      const max = Math.max(...nums);
-      const range = max - min;
-      const q1 = sorted[Math.floor(n * 0.25)];
-      const q3 = sorted[Math.floor(n * 0.75)];
-      const iqr = q3 - q1;
-
-      document.getElementById('statsResults').innerHTML = `
-        <div class="stat-row"><span>Count</span><span>${n}</span></div>
-        <div class="stat-row"><span>Sum</span><span>${sum.toFixed(4)}</span></div>
-        <div class="stat-row"><span>Mean</span><span>${mean.toFixed(4)}</span></div>
-        <div class="stat-row"><span>Median</span><span>${median.toFixed(4)}</span></div>
-        <div class="stat-row"><span>Mode</span><span>${mode !== null ? mode : 'N/A'}</span></div>
-        <div class="stat-row"><span>Std Dev (σ)</span><span>${stdDev.toFixed(4)}</span></div>
-        <div class="stat-row"><span>Std Dev (s)</span><span>${sampleStd.toFixed(4)}</span></div>
-        <div class="stat-row"><span>Min</span><span>${min}</span></div>
-        <div class="stat-row"><span>Max</span><span>${max}</span></div>
-        <div class="stat-row"><span>Range</span><span>${range.toFixed(4)}</span></div>
-        <div class="stat-row"><span>Q1</span><span>${q1.toFixed(4)}</span></div>
-        <div class="stat-row"><span>Q3</span><span>${q3.toFixed(4)}</span></div>
-        <div class="stat-row"><span>IQR</span><span>${iqr.toFixed(4)}</span></div>
-      `;
-    }
-
-    function convertBase() {
-      const val = document.getElementById('baseInput').value.trim();
-      if (!val) {
-        document.getElementById('baseDec').value = '';
-        document.getElementById('baseBin').value = '';
-        document.getElementById('baseOct').value = '';
-        document.getElementById('baseHex').value = '';
-        return;
-      }
-      try {
-        let dec = 0;
-        if (val.startsWith('0x')) dec = parseInt(val, 16);
-        else if (val.startsWith('0b')) dec = parseInt(val, 2);
-        else if (val.startsWith('0o')) dec = parseInt(val, 8);
-        else if (/^[01]+$/.test(val)) dec = parseInt(val, 2);
-        else if (/^[0-7]+$/.test(val)) dec = parseInt(val, 8);
-        else if (/^[0-9a-fA-F]+$/.test(val)) dec = parseInt(val, 16);
-        else dec = parseFloat(val);
-        
-        if (!isNaN(dec)) {
-          document.getElementById('baseDec').value = Math.floor(dec).toString();
-          document.getElementById('baseBin').value = Math.floor(dec).toString(2);
-          document.getElementById('baseOct').value = Math.floor(dec).toString(8);
-          document.getElementById('baseHex').value = Math.floor(dec).toString(16).toUpperCase();
-        }
-      } catch (e) {}
-    }
+    let current = '0';
+    let expression = '';
+    let memory = 0;
+    let lastAnswer = 0;
+    let angleMode = 'RAD';
+    let justEqualed = false;
 
     function toggleTheme() {
       const html = document.documentElement;
@@ -336,285 +146,302 @@
       document.documentElement.setAttribute('data-theme', 'dark');
     }
 
-const calc = {
-      current: '0',
-      expr: '',
-      angle: 'RAD',
-      memory: 0,
-      ans: 0,
-      fractionMode: false,
-      
-      update() {
-        document.getElementById('result').textContent = this.current;
-        document.getElementById('expr').textContent = this.expr;
-        document.getElementById('memIndicator').textContent = this.memory !== 0 ? `M: ${this.memory}` : '';
-      },
-      
-      toFraction(num) {
-        if (!this.fractionMode || !isFinite(num) || num === 0) return String(num);
-        const tolerance = 1e-6;
-        let h1 = 1, k1 = 0, h2 = 0, k2 = 1;
-        let b = num;
-        while (true) {
-          const a = Math.floor(b);
-          let frac = a + k2 / k1;
-          if (Math.abs(num - frac) < tolerance || k1 > 100) {
-            if (k1 === 1) return String(a);
-            return (a === 0 ? '' : a) + ' ' + (h1 === k1 ? '1' : h1 + '/' + k1);
-          }
-          const h3 = a * h1 + h2, k3 = a * k1 + k2;
-          h2 = h1; k2 = k1;
-          h1 = h3; k1 = k3;
-          if (Math.abs(num - a) < tolerance) break;
-          b = 1 / (b - a);
-        }
-        return String(num);
-      },
-      
-      toggleFraction() {
-        this.fractionMode = !this.fractionMode;
-        document.querySelector('.calc-btn[title="Toggle fraction display"]').classList.toggle('active', this.fractionMode);
-        this.update();
-      },
-      
-      toRad(val) {
-        if (this.angle === 'DEG') return val * Math.PI / 180;
-        if (this.angle === 'GRAD') return val * Math.PI / 200;
-        return val;
-      },
-      
-      fromRad(val) {
-        if (this.angle === 'DEG') return val * 180 / Math.PI;
-        if (this.angle === 'GRAD') return val * 200 / Math.PI;
-        return val;
-      },
-      
-      number(n) {
-        if (this.current === '0' || this.current === 'Error') this.current = n;
-        else if (this.current.length < 15) this.current += n;
-        this.update();
-      },
-      
-      decimal() {
-        if (!this.current.includes('.')) this.current += '.';
-        this.update();
-      },
-      
-      input(val) {
-        if (this.current === '0' || this.current === 'Error') this.current = val;
-        else this.current += val;
-        this.update();
-      },
-      
-      operator(op) {
-        this.expr += this.current + ' ' + op + ' ';
-        this.current = '0';
-        this.update();
-      },
-      
-      setAngle(mode) {
-        this.angle = mode;
-        document.getElementById('radBtn').classList.toggle('active', mode === 'RAD');
-        document.getElementById('degBtn').classList.toggle('active', mode === 'DEG');
-        document.getElementById('gradBtn').classList.toggle('active', mode === 'GRAD');
-      },
-      
-      func(f) {
-        const val = parseFloat(this.current);
-        try {
-          let result;
-          switch(f) {
-            case 'pi': result = Math.PI; break;
-            case 'e': result = Math.E; break;
-            case 'sqrt': result = val >= 0 ? Math.sqrt(val) : 'Error: Domain error'; break;
-            case 'cbrt': result = Math.cbrt(val); break;
-            case 'abs': result = Math.abs(val); break;
-            case 'sq': result = val * val; break;
-            case 'cube': result = val * val * val; break;
-            case 'inv': result = val !== 0 ? 1 / val : 'Error: Division by zero'; break;
-            case 'pow': this.expr += this.current + ' ** '; this.current = ''; this.update(); return;
-            case 'fact': result = val >= 0 && Number.isInteger(val) ? (val > 170 ? 'Error: Result too large' : factorial(val)) : 'Error: Integer required'; break;
-            case 'log': result = val > 0 ? Math.log10(val) : 'Error: Domain error'; break;
-            case 'ln': result = val > 0 ? Math.log(val) : 'Error: Domain error'; break;
-            case 'sin': result = Math.sin(this.toRad(val)); break;
-            case 'cos': result = Math.cos(this.toRad(val)); break;
-            case 'tan': result = Math.cos(this.toRad(val)) !== 0 ? Math.tan(this.toRad(val)) : 'Error: Domain error'; break;
-            case 'asin': result = val >= -1 && val <= 1 ? this.fromRad(Math.asin(val)) : 'Error: Input out of range'; break;
-            case 'acos': result = val >= -1 && val <= 1 ? this.fromRad(Math.acos(val)) : 'Error: Input out of range'; break;
-            case 'atan': result = this.fromRad(Math.atan(val)); break;
-            case 'sinh': result = Math.sinh(val); break;
-            case 'cosh': result = Math.cosh(val); break;
-            case 'tanh': result = Math.tanh(val); break;
-            case 'asinh': result = Math.asinh(val); break;
-            case 'acosh': result = val >= 1 ? Math.acosh(val) : 'Error: Input out of range'; break;
-            case 'atanh': result = val > -1 && val < 1 ? Math.atanh(val) : 'Error: Input out of range'; break;
-            case 'floor': result = Math.floor(val); break;
-            case 'ceil': result = Math.ceil(val); break;
-            case 'round': result = Math.round(val); break;
-            case 'rand': result = Math.random(); break;
-            case 'exp': result = Math.exp(val); break;
-            default: return;
-          }
-          this.current = String(result);
-        } catch (e) {
-          this.current = 'Error: Invalid expression';
-        }
-        this.update();
-      },
-      
-      insertAns() {
-        if (this.ans !== 0) {
-          if (this.current === '0') this.current = String(this.ans);
-          else this.current += String(this.ans);
-          this.update();
-        }
-      },
-      
-      clear() {
-        this.current = '0';
-        this.expr = '';
-        this.update();
-      },
-      
-      clearEntry() {
-        this.current = '0';
-        this.update();
-      },
-      
-      backspace() {
-        if (this.current.length === 1 || this.current === 'Error') this.current = '0';
-        else this.current = this.current.slice(0, -1);
-        this.update();
-      },
-      
-      memoryClear() {
-        this.memory = 0;
-        this.update();
-      },
-      
-      memoryRecall() {
-        if (this.memory !== 0) {
-          if (this.current === '0') this.current = String(this.memory);
-          else this.current += String(this.memory);
-        }
-        this.update();
-      },
-      
-      memoryAdd() {
-        const val = parseFloat(this.current);
-        if (!isNaN(val)) {
-          this.memory += val;
-          this.current = '0';
-        }
-        this.update();
-      },
-      
-      memorySub() {
-        const val = parseFloat(this.current);
-        if (!isNaN(val)) {
-          this.memory -= val;
-          this.current = '0';
-        }
-        this.update();
-      },
-      
-      copyResult() {
-        const result = this.current === 'Error' ? '0' : this.current;
-        navigator.clipboard.writeText(result).then(() => {
-          const btn = document.querySelector('.toolbar-btn');
-          btn.textContent = '✓';
-          setTimeout(() => btn.textContent = '📋', 1000);
-        });
-      },
-      
-      equals() {
-        try {
-          let fullExpr = this.expr + this.current;
-          fullExpr = fullExpr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-')
-            .replace(/π/g, Math.PI).replace(/e(?![x])/gi, Math.E).replace(/\^/g, '**');
-          
-          const result = this.safeEval(fullExpr);
-          if (!isFinite(result)) throw new Error();
-          
-          this.ans = result;
-          this.addHistory(this.expr + this.current, result);
-          this.current = this.toFraction(this.formatResult(result));
-          this.expr = '';
-        } catch (e) {
-          this.current = 'Error';
-        }
-        this.update();
-      },
-      
-      safeEval(expr) {
-        return Function('"use strict";return (' + expr + ')')();
-      },
-      
-      formatResult(num) {
-        if (Math.abs(num) < 0.0000000001) return '0';
-        if (!isFinite(num)) return 'Error';
-        const rounded = Math.round(num * 1e10) / 1e10;
-        if (Math.abs(rounded) > 1e10 || (Math.abs(rounded) < 1e-6 && rounded !== 0)) {
-          return rounded.toExponential(6);
-        }
-        return String(rounded);
-      },
-      
-      addHistory(expr, result) {
-        const hist = JSON.parse(localStorage.getItem('sciHistory') || '[]');
-        hist.unshift({ expr, result: String(result), time: Date.now() });
-        if (hist.length > 50) hist.pop();
-        localStorage.setItem('sciHistory', JSON.stringify(hist));
-        renderHistory(hist);
-      },
-      
-      clearHistory() {
-        if (confirm('Clear all history?')) {
-          localStorage.removeItem('sciHistory');
-          renderHistory([]);
-        }
-      },
-      
-      deleteHistory(time) {
-        const hist = JSON.parse(localStorage.getItem('sciHistory') || '[]');
-        const filtered = hist.filter(h => h.time !== time);
-        localStorage.setItem('sciHistory', JSON.stringify(filtered));
-        renderHistory(filtered);
-      }
-    };
+    function setAngle(mode) {
+      playClick();
+      angleMode = mode;
+      document.getElementById('degBtn').classList.toggle('active', mode === 'DEG');
+      document.getElementById('radBtn').classList.toggle('active', mode === 'RAD');
+      document.getElementById('gradBtn').classList.toggle('active', mode === 'GRAD');
+    }
 
-    function renderHistory(hist) {
+    function toRad(val) {
+      if (angleMode === 'DEG') return val * Math.PI / 180;
+      if (angleMode === 'GRAD') return val * Math.PI / 200;
+      return val;
+    }
+
+    function fromRad(val) {
+      if (angleMode === 'DEG') return val * 180 / Math.PI;
+      if (angleMode === 'GRAD') return val * 200 / Math.PI;
+      return val;
+    }
+
+    function update() {
+      document.getElementById('result').textContent = current;
+      document.getElementById('expr').textContent = expression;
+      document.getElementById('memIndicator').textContent = memory !== 0 ? `M: ${formatNum(memory)}` : '';
+    }
+
+    function formatNum(n) {
+      if (!isFinite(n)) return 'Error';
+      const str = String(n);
+      if (str.length > 12) return n.toExponential(6);
+      return str;
+    }
+
+    function digit(d) {
+      playClick();
+      if (justEqualed) { current = d; expression = ''; justEqualed = false; }
+      else if (current === '0' || current === 'Error') current = d;
+      else if (current.length < 15) current += d;
+      update();
+    }
+
+    function decimal() {
+      playClick();
+      if (justEqualed) { current = '0.'; expression = ''; justEqualed = false; }
+      else if (!current.includes('.')) current += '.';
+      update();
+    }
+
+    function input(val) {
+      playClick();
+      if (justEqualed) { current = val; expression = ''; justEqualed = false; }
+      else if (current === '0' || current === 'Error') current = val;
+      else current += val;
+      update();
+    }
+
+    function inputPi() {
+      playClick();
+      current = String(Math.PI);
+      justEqualed = false;
+      update();
+    }
+
+    function inputE() {
+      playClick();
+      current = String(Math.E);
+      justEqualed = false;
+      update();
+    }
+
+    function toggleSign() {
+      playClick();
+      if (current !== '0' && current !== 'Error') {
+        current = current.startsWith('-') ? current.slice(1) : '-' + current;
+      }
+      update();
+    }
+
+    function sciFunc(f) {
+      playClick();
+      const val = parseFloat(current);
+      let result;
+      
+      try {
+        switch (f) {
+          case 'sin': result = Math.sin(toRad(val)); break;
+          case 'cos': result = Math.cos(toRad(val)); break;
+          case 'tan': 
+            const tanVal = Math.cos(toRad(val));
+            if (Math.abs(tanVal) < 1e-15) { current = 'Error'; update(); return; }
+            result = Math.tan(toRad(val)); 
+            break;
+          case 'asin':
+            if (val < -1 || val > 1) { current = 'Error'; update(); return; }
+            result = fromRad(Math.asin(val)); break;
+          case 'acos':
+            if (val < -1 || val > 1) { current = 'Error'; update(); return; }
+            result = fromRad(Math.acos(val)); break;
+          case 'atan': result = fromRad(Math.atan(val)); break;
+          case 'sinh': result = Math.sinh(val); break;
+          case 'cosh': result = Math.cosh(val); break;
+          case 'tanh': result = Math.tanh(val); break;
+          case 'asinh': result = Math.asinh(val); break;
+          case 'acosh':
+            if (val < 1) { current = 'Error'; update(); return; }
+            result = Math.acosh(val); break;
+          case 'atanh':
+            if (val <= -1 || val >= 1) { current = 'Error'; update(); return; }
+            result = Math.atanh(val); break;
+          case 'sqrt':
+            if (val < 0) { current = 'Error'; update(); return; }
+            result = Math.sqrt(val); break;
+          case 'cbrt': result = Math.cbrt(val); break;
+          case 'abs': result = Math.abs(val); break;
+          case 'sq': result = val * val; break;
+          case 'inv':
+            if (val === 0) { current = 'Error'; update(); return; }
+            result = 1 / val; break;
+          case 'fact':
+            if (val < 0 || !Number.isInteger(val) || val > 170) { current = 'Error'; update(); return; }
+            result = factorial(val); break;
+          case 'log':
+            if (val <= 0) { current = 'Error'; update(); return; }
+            result = Math.log10(val); break;
+          case 'ln':
+            if (val <= 0) { current = 'Error'; update(); return; }
+            result = Math.log(val); break;
+          case 'exp': result = Math.exp(val); break;
+          case '10x': result = Math.pow(10, val); break;
+          case 'floor': result = Math.floor(val); break;
+          case 'ceil': result = Math.ceil(val); break;
+          case 'round': result = Math.round(val); break;
+          case 'rand': result = Math.random(); break;
+          case 'mod':
+            const mod = prompt('Modulo:', '2');
+            if (mod === null) return;
+            const m = parseFloat(mod);
+            if (isNaN(m) || m === 0) { current = 'Error'; update(); return; }
+            result = val % m; break;
+          case 'pow':
+            const p = prompt('Power:', '2');
+            if (p === null) return;
+            const pow = parseFloat(p);
+            if (isNaN(pow)) { current = 'Error'; update(); return; }
+            result = Math.pow(val, pow); break;
+          case 'pct': result = val / 100; break;
+          default: return;
+        }
+        current = formatNum(result);
+        justEqualed = true;
+      } catch (e) {
+        current = 'Error';
+      }
+      update();
+    }
+
+    function factorial(n) {
+      if (n === 0 || n === 1) return 1;
+      let result = 1;
+      for (let i = 2; i <= n; i++) result *= i;
+      return result;
+    }
+
+    function operator(op) {
+      playClick();
+      expression = current + ' ' + (op === '*' ? '×' : op === '/' ? '÷' : op);
+      justEqualed = false;
+      update();
+    }
+
+    function equals() {
+      playClick();
+      const val = parseFloat(current);
+      lastAnswer = val;
+      addHistory(expression + ' =', val);
+      current = formatNum(val);
+      expression = '';
+      justEqualed = true;
+      update();
+    }
+
+    function insertAns() {
+      playClick();
+      current = String(lastAnswer);
+      justEqualed = false;
+      update();
+    }
+
+    function clearAll() {
+      playClick();
+      current = '0';
+      expression = '';
+      justEqualed = false;
+      update();
+    }
+
+    function clearEntry() {
+      playClick();
+      current = '0';
+      justEqualed = false;
+      update();
+    }
+
+    function backspace() {
+      playClick();
+      if (current.length === 1 || current === 'Error') current = '0';
+      else current = current.slice(0, -1);
+      update();
+    }
+
+    function memoryClear() { playClick(); memory = 0; update(); }
+    function memoryRecall() { playClick(); current = String(memory); justEqualed = false; update(); }
+    function memoryAdd() { playClick(); memory += parseFloat(current) || 0; update(); }
+    function memorySub() { playClick(); memory -= parseFloat(current) || 0; update(); }
+
+    function copyResult() {
+      navigator.clipboard.writeText(current).then(() => {
+        const btn = document.querySelector('.toolbar-btn');
+        btn.textContent = '✓';
+        setTimeout(() => btn.textContent = '📋', 1000);
+      });
+    }
+
+    function addHistory(expr, result) {
+      const hist = JSON.parse(localStorage.getItem('sciHistory') || '[]');
+      hist.unshift({ expr, result: String(result), time: Date.now() });
+      if (hist.length > 50) hist.pop();
+      localStorage.setItem('sciHistory', JSON.stringify(hist));
+      renderHistory();
+    }
+
+    function clearHistory() {
+      if (confirm('Clear all history?')) {
+        localStorage.removeItem('sciHistory');
+        renderHistory();
+      }
+    }
+
+    function deleteHistory(time) {
+      const hist = JSON.parse(localStorage.getItem('sciHistory') || '[]');
+      const filtered = hist.filter(h => h.time !== time);
+      localStorage.setItem('sciHistory', JSON.stringify(filtered));
+      renderHistory();
+    }
+
+    function recall(val) {
+      current = val;
+      justEqualed = false;
+      update();
+    }
+
+    function renderHistory() {
       const el = document.getElementById('history');
-      if (!el) return;
+      const hist = JSON.parse(localStorage.getItem('sciHistory') || '[]');
       if (hist.length === 0) {
-        el.innerHTML = '<div style="color: var(--text-muted); font-size: 0.8rem;">No calculations yet</div>';
+        el.innerHTML = '<div style="color:var(--text-muted);font-size:0.8rem;padding:0.5rem;">No calculations yet</div>';
         return;
       }
       el.innerHTML = hist.slice(0, 20).map(item => `
         <div class="history-item">
           <div class="expr" onclick="recall('${item.result}')">${item.expr}</div>
           <div class="result" onclick="recall('${item.result}')">= ${item.result}</div>
-          <button class="hist-del" onclick="calc.deleteHistory(${item.time})">×</button>
+          <button class="hist-del" onclick="event.stopPropagation();deleteHistory(${item.time})">×</button>
         </div>
       `).join('');
     }
 
-    function recall(val) {
-      calc.current = val;
-      calc.update();
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playClick() {
+      if (localStorage.getItem('soundEnabled') === 'true') {
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.frequency.value = 600;
+          gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.05);
+        } catch (e) {}
+      }
     }
 
-    renderHistory(JSON.parse(localStorage.getItem('sciHistory') || '[]'));
-
     document.addEventListener('keydown', (e) => {
-      if (e.key >= '0' && e.key <= '9') calc.number(e.key);
-      if (e.key === '.') calc.decimal();
-      if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') calc.operator(e.key);
-      if (e.key === 'Enter' || e.key === '=') calc.equals();
-      if (e.key === 'Escape') calc.clear();
-      if (e.key === 'Backspace') calc.backspace();
-      e.preventDefault();
+      if (e.key >= '0' && e.key <= '9') digit(e.key);
+      if (e.key === '.') decimal();
+      if (e.key === '+' || e.key === '-') operator(e.key);
+      if (e.key === '*' || e.key === '/') operator(e.key);
+      if (e.key === 'Enter' || e.key === '=') equals();
+      if (e.key === 'Escape') clearAll();
+      if (e.key === 'Backspace') backspace();
     });
+
+    renderHistory();
+    update();
   </script>
 </body>
 </html>
