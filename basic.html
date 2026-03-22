@@ -95,6 +95,8 @@
       current: '0',
       expr: '',
       memory: 0,
+      lastOp: null,
+      lastNum: '0',
       
       update() {
         document.getElementById('result').textContent = this.current;
@@ -114,14 +116,25 @@
       },
       
       operator(op) {
-        this.expr += this.current + ' ' + op + ' ';
-        this.current = '0';
-        this.update();
+        if (op === '%') {
+          const val = parseFloat(this.current) / 100;
+          this.current = String(Math.round(val * 1e10) / 1e10);
+          this.update();
+        } else {
+          if (this.current !== '0' && this.current !== '') {
+            this.lastOp = op;
+            this.lastNum = this.current;
+          }
+          this.expr += this.current + ' ' + op + ' ';
+          this.current = '0';
+          this.update();
+        }
       },
       
       clearAll() {
         this.current = '0';
         this.expr = '';
+        this.lastOp = null;
         this.update();
       },
       
@@ -185,16 +198,35 @@
       
       equals() {
         try {
-          const fullExpr = this.expr + this.current;
+          let fullExpr = this.expr + this.current;
+          if (!fullExpr.trim()) return;
+          
           const result = Function('"use strict";return (' + fullExpr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-') + ')')();
-          if (!isFinite(result)) throw new Error();
+          if (!isFinite(result)) throw new Error('Division by zero');
+          
           this.addHistory(fullExpr, result);
+          this.lastNum = this.current;
           this.current = String(Math.round(result * 1e10) / 1e10);
           this.expr = '';
         } catch (e) {
           this.current = 'Error';
         }
         this.update();
+      },
+      
+      repeatEquals() {
+        if (this.lastOp && this.lastNum) {
+          try {
+            const fullExpr = this.current + ' ' + this.lastOp + ' ' + this.lastNum;
+            const result = Function('"use strict";return (' + fullExpr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-') + ')')();
+            if (!isFinite(result)) throw new Error();
+            this.addHistory(fullExpr, result);
+            this.current = String(Math.round(result * 1e10) / 1e10);
+          } catch (e) {
+            this.current = 'Error';
+          }
+          this.update();
+        }
       },
       
       addHistory(expr, result) {
