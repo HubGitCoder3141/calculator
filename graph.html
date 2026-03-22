@@ -16,15 +16,27 @@
       margin: 0 auto;
       padding: 1rem;
     }
-    .graph-sidebar {
+.graph-sidebar {
       width: 320px;
       flex-shrink: 0;
-      background: var(--card-bg);
-      border: 3px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem;
-      max-height: calc(100vh - 150px);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem;
+      max-height: calc(100vh - 120px);
       overflow-y: auto;
+      overflow-x: visible;
+    }
+    .func-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: var(--surface);
+      flex-wrap: wrap;
     }
     .graph-main {
       flex: 1;
@@ -53,7 +65,7 @@
       font-size: 0.9rem;
       border: 1px solid var(--border);
       border-radius: 4px;
-      background: var(--card-bg);
+      background: var(--surface);
       color: var(--text);
     }
     .func-color {
@@ -405,7 +417,17 @@
     function updateIneqOp(i, op) { ineqFuncs[i].op = op; generateFuncInputs(); drawGraph(); saveState(); }
 
     function toggleFunc(i) { functions[i].active = !functions[i].active; generateFuncInputs(); drawGraph(); saveState(); }
-    function updateFunc(i, v) { functions[i].expr = v; saveState(); }
+    function updateFunc(i, v) { 
+      functions[i].expr = v; 
+      saveState();
+      debounceDraw();
+    }
+    
+    let drawTimeout;
+    function debounceDraw() {
+      clearTimeout(drawTimeout);
+      drawTimeout = setTimeout(drawGraph, 100);
+    }
     function toggleParam(i) { paramFuncs[i].active = !paramFuncs[i].active; generateFuncInputs(); drawGraph(); saveState(); }
     function updateParamX(i, v) { paramFuncs[i].x = v; saveState(); }
     function updateParamY(i, v) { paramFuncs[i].y = v; saveState(); }
