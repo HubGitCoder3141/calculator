@@ -9,65 +9,35 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <style>
-    .hero {
-      padding: 5rem 2rem;
-      text-align: center;
-      background: var(--bg);
-      position: relative;
-    }
-    .hero h1 {
-      font-size: clamp(2rem, 6vw, 3.5rem);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-      margin-bottom: 1rem;
-    }
-    .hero h1 span { color: var(--accent); }
-    .hero p {
-      font-size: 1.1rem;
-      color: var(--text-muted);
-      max-width: 500px;
-      margin: 0 auto 1.5rem;
-    }
-    .cta { display: inline-flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; }
-    .cta a, .cta button {
-      font-family: var(--sans);
-      font-size: 0.9rem;
-      font-weight: 500;
-      padding: 0.8rem 1.5rem;
-      background: var(--accent);
-      color: #fff;
-      border: 1px solid var(--accent);
-      cursor: pointer;
-      text-decoration: none;
-      border-radius: 6px;
-      transition: all 0.15s ease-out;
-    }
-    .cta a:hover, .cta button:hover { background: #c96a45; transform: translateY(-1px); }
-    .cta .secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
-    .cta .secondary:hover { background: var(--bg-secondary); border-color: var(--text); }
-    .tools { padding: 3rem 2rem; max-width: 900px; margin: 0 auto; }
-    .tools h2 { font-size: 1.6rem; margin-bottom: 1.5rem; text-align: center; letter-spacing: -0.02em; }
-    .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem; }
-    .tool-card {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      padding: 1.2rem;
-      border-radius: 8px;
-      transition: all 0.15s ease-out;
-      cursor: pointer;
-      text-decoration: none;
-      color: inherit;
-    }
-    .tool-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-    .tool-card h3 { font-family: var(--mono); font-size: 0.95rem; margin-bottom: 0.4rem; }
-    .tool-card p { color: var(--text-muted); font-size: 0.9rem; }
-    .features { padding: 2.5rem 2rem; background: var(--bg-secondary); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .features-grid { max-width: 800px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; text-align: center; }
-    .feature-icon { font-size: 1.8rem; margin-bottom: 0.4rem; }
-    .feature h4 { font-family: var(--mono); font-size: 0.85rem; margin-bottom: 0.25rem; }
-    .feature p { color: var(--text-muted); font-size: 0.85rem; }
-    @media (max-width: 768px) { .hero { padding: 3rem 1rem; } }
+    .home-container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+    .quick-calc { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem; margin-bottom: 1.5rem; }
+    .quick-calc h2 { font-size: 1.1rem; margin-bottom: 0.8rem; font-family: var(--mono); }
+    .quick-input-wrap { display: flex; gap: 0.5rem; }
+    .quick-input { flex: 1; padding: 0.8rem 1rem; font-family: var(--mono); font-size: 1.1rem; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); }
+    .quick-input:focus { outline: none; border-color: var(--accent); }
+    .quick-result { padding: 0.8rem 1rem; font-family: var(--mono); font-size: 1.1rem; background: #1a1a18; color: #f5f5f5; border-radius: 6px; min-width: 100px; text-align: center; }
+    .mini-calcs { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .mini-calc { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem; cursor: pointer; transition: all 0.15s ease-out; text-decoration: none; color: inherit; display: block; }
+    .mini-calc:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .mini-calc h3 { font-family: var(--mono); font-size: 1rem; margin-bottom: 0.5rem; color: var(--accent); }
+    .mini-calc p { font-size: 0.85rem; color: var(--text-muted); }
+    .mini-preview { margin-top: 0.8rem; background: #1a1a18; border-radius: 6px; padding: 0.6rem; }
+    .mini-preview .disp { font-family: var(--mono); font-size: 1.2rem; color: #f5f5f5; text-align: right; }
+    .tools-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+    .tool-panel { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem; }
+    .tool-panel h3 { font-family: var(--mono); font-size: 0.95rem; margin-bottom: 0.8rem; }
+    .converter-row { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; }
+    .converter-row select, .converter-row input { flex: 1; padding: 0.5rem; font-family: var(--mono); border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); }
+    .converter-row input { min-width: 80px; }
+    .converter-result { font-family: var(--mono); font-weight: 700; color: var(--accent); padding: 0.5rem; background: var(--surface); border-radius: 4px; }
+    .rand-row { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .rand-row input { flex: 1; padding: 0.5rem; font-family: var(--mono); border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); }
+    .rand-row button { padding: 0.5rem 1rem; background: var(--accent); color: #fff; border: none; border-radius: 4px; cursor: pointer; font-family: var(--mono); }
+    .rand-result { font-family: var(--mono); font-size: 1.2rem; font-weight: 700; color: var(--accent); text-align: center; padding: 0.5rem; background: var(--surface); border-radius: 4px; }
+    .history-mini { max-height: 200px; overflow-y: auto; }
+    .history-mini .history-item { padding: 0.4rem; margin-bottom: 0.3rem; }
+    .history-mini .expr { font-size: 0.6rem; }
+    .history-mini .result { font-size: 0.8rem; }
   </style>
 </head>
 <body>
@@ -83,57 +53,77 @@
   </header>
 
   <main>
-    <section class="hero">
-      <h1>Calculate with<br><span>Precision</span></h1>
-      <p>A collection of powerful calculation tools. Basic arithmetic, scientific functions, and interactive graphs.</p>
-      <div class="cta">
-        <a href="basic.html">Start Calculating →</a>
-        <a href="graph.html" class="secondary">Try Graph</a>
+    <div class="home-container">
+      <div class="quick-calc">
+        <h2>Quick Calculate</h2>
+        <div class="quick-input-wrap">
+          <input type="text" class="quick-input" id="quickInput" placeholder="Enter expression (e.g., 2+2, sqrt(16), sin(0))" onkeypress="if(event.key==='Enter')quickCalc()">
+          <button class="quick-result" onclick="quickCalc()">=</button>
+          <div class="quick-result" id="quickResult">0</div>
+        </div>
       </div>
-    </section>
 
-    <section class="tools">
-      <h2>Tools</h2>
-      <div class="tools-grid">
-        <a href="basic.html" class="tool-card">
+      <div class="mini-calcs">
+        <a href="basic.html" class="mini-calc">
           <h3>Basic Calculator</h3>
-          <p>Simple arithmetic for everyday calculations. Add, subtract, multiply, divide.</p>
+          <p>Simple arithmetic for everyday calculations</p>
+          <div class="mini-preview">
+            <div class="disp">0</div>
+          </div>
         </a>
-        <a href="scientific.html" class="tool-card">
+        <a href="scientific.html" class="mini-calc">
           <h3>Scientific Calculator</h3>
-          <p>Trigonometry, logarithms, exponents, and more. Perfect for students.</p>
+          <p>Trigonometry, logarithms, exponents</p>
+          <div class="mini-preview">
+            <div class="disp">0</div>
+          </div>
         </a>
-        <a href="graph.html" class="tool-card">
+        <a href="graph.html" class="mini-calc">
           <h3>Graph Calculator</h3>
-          <p>Plot mathematical functions visually. Enter any equation and see it rendered.</p>
+          <p>Plot mathematical functions visually</p>
+          <div class="mini-preview">
+            <div class="disp" style="font-size:0.8rem;">Y = X²</div>
+          </div>
         </a>
       </div>
-    </section>
 
-    <section class="features">
-      <div class="features-grid">
-        <div class="feature">
-          <div class="feature-icon">⚡</div>
-          <h4>Fast</h4>
-          <p>Instant calculations</p>
+      <div class="tools-row">
+        <div class="tool-panel">
+          <h3>Unit Converter</h3>
+          <div class="converter-row">
+            <select id="convType" onchange="updateConverter()">
+              <option value="length">Length</option>
+              <option value="weight">Weight</option>
+              <option value="temp">Temperature</option>
+              <option value="data">Data</option>
+            </select>
+          </div>
+          <div class="converter-row">
+            <input type="number" id="convInput1" placeholder="Value" oninput="convert()">
+            <span id="convLabel1">cm</span>
+          </div>
+          <div class="converter-row">
+            <input type="number" id="convInput2" placeholder="Result" readonly>
+            <span id="convLabel2">m</span>
+          </div>
         </div>
-        <div class="feature">
-          <div class="feature-icon">🎯</div>
-          <h4>Accurate</h4>
-          <p>Precise results</p>
+
+        <div class="tool-panel">
+          <h3>Random Number</h3>
+          <div class="rand-row">
+            <input type="number" id="randMin" placeholder="Min" value="1">
+            <input type="number" id="randMax" placeholder="Max" value="100">
+          </div>
+          <button onclick="generateRandom()">Generate</button>
+          <div class="rand-result" id="randResult">-</div>
         </div>
-        <div class="feature">
-          <div class="feature-icon">🔄</div>
-          <h4>Persistent</h4>
-          <p>History saved locally</p>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">◐</div>
-          <h4>Themed</h4>
-          <p>Light and dark modes</p>
+
+        <div class="tool-panel">
+          <h3>Recent History</h3>
+          <div class="history-mini" id="historyMini"></div>
         </div>
       </div>
-    </section>
+    </div>
   </main>
 
   <footer>
@@ -154,6 +144,81 @@
     if (localStorage.getItem('theme') === 'dark') {
       document.documentElement.setAttribute('data-theme', 'dark');
     }
+
+    function quickCalc() {
+      const input = document.getElementById('quickInput').value.trim();
+      const display = document.getElementById('quickResult');
+      if (!input) { display.textContent = '0'; return; }
+      try {
+        let expr = input
+          .replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-')
+          .replace(/π/g, Math.PI).replace(/e(?![x])/g, Math.E)
+          .replace(/\^/g, '**')
+          .replace(/sin/g, 'Math.sin').replace(/cos/g, 'Math.cos').replace(/tan/g, 'Math.tan')
+          .replace(/sqrt/g, 'Math.sqrt').replace(/log/g, 'Math.log10').replace(/ln/g, 'Math.log')
+          .replace(/abs/g, 'Math.abs');
+        const result = Function('"use strict";return (' + expr + ')')();
+        display.textContent = isFinite(result) ? Math.round(result * 1e10) / 1e10 : 'Error';
+      } catch (e) {
+        display.textContent = 'Error';
+      }
+    }
+
+    const convUnits = {
+      length: { units: ['m', 'cm', 'mm', 'km', 'in', 'ft', 'yd', 'mi'], factors: [1, 0.01, 0.001, 1000, 0.0254, 0.3048, 0.9144, 1609.344] },
+      weight: { units: ['kg', 'g', 'mg', 'lb', 'oz'], factors: [1, 0.001, 0.000001, 0.453592, 0.0283495] },
+      temp: { units: ['°C', '°F', 'K'], factors: [1, 1, 1] },
+      data: { units: ['B', 'KB', 'MB', 'GB', 'TB'], factors: [1, 1024, 1048576, 1073741824, 1099511627776] }
+    };
+
+    function updateConverter() {
+      const type = document.getElementById('convType').value;
+      const u = convUnits[type];
+      document.getElementById('convLabel1').textContent = u.units[0];
+      document.getElementById('convLabel2').textContent = u.units[1];
+      convert();
+    }
+
+    function convert() {
+      const type = document.getElementById('convType').value;
+      const val = parseFloat(document.getElementById('convInput1').value);
+      if (isNaN(val)) { document.getElementById('convInput2').value = ''; return; }
+      const u = convUnits[type];
+      if (type === 'temp') {
+        const c = document.getElementById('convLabel1').textContent === '°C' ? val : document.getElementById('convLabel1').textContent === '°F' ? (val-32)*5/9 : val - 273.15;
+        const out = document.getElementById('convLabel2').textContent === '°C' ? c : document.getElementById('convLabel2').textContent === '°F' ? c*9/5+32 : c + 273.15;
+        document.getElementById('convInput2').value = out.toFixed(4);
+      } else {
+        const base = val * u.factors[0];
+        document.getElementById('convInput2').value = (base / u.factors[1]).toFixed(4);
+      }
+    }
+
+    function generateRandom() {
+      const min = parseFloat(document.getElementById('randMin').value) || 0;
+      const max = parseFloat(document.getElementById('randMax').value) || 100;
+      const result = Math.floor(Math.random() * (max - min + 1)) + min;
+      document.getElementById('randResult').textContent = result;
+    }
+
+    function loadHistory() {
+      const basic = JSON.parse(localStorage.getItem('basicHistory') || '[]');
+      const sci = JSON.parse(localStorage.getItem('sciHistory') || '[]');
+      const all = [...basic, ...sci].sort((a, b) => b.time - a.time).slice(0, 5);
+      const el = document.getElementById('historyMini');
+      if (all.length === 0) {
+        el.innerHTML = '<p style="color:var(--text-muted);font-size:0.8rem;">No calculations yet</p>';
+        return;
+      }
+      el.innerHTML = all.map(item => `
+        <div class="history-item" onclick="document.getElementById('quickInput').value='${item.result}';quickCalc()">
+          <div class="expr">${item.expr}</div>
+          <div class="result">= ${item.result}</div>
+        </div>
+      `).join('');
+    }
+
+    loadHistory();
   </script>
 </body>
 </html>

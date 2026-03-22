@@ -48,6 +48,7 @@
           <button class="calc-btn func" onclick="calc.memoryAdd()" title="Memory Add">M+</button>
           <button class="calc-btn func" onclick="calc.memorySub()" title="Memory Subtract">M-</button>
 <button class="calc-btn clear" onclick="calc.clear()">C</button>
+          <button class="calc-btn" onclick="calc.clearEntry()">CE</button>
           <button class="calc-btn" onclick="calc.backspace()">⌫</button>
           <button class="calc-btn func" onclick="calc.input('(')">(</button>
           <button class="calc-btn func" onclick="calc.input(')')">)</button>
@@ -84,7 +85,7 @@
           <button class="calc-btn" onclick="calc.number('5')">5</button>
           <button class="calc-btn" onclick="calc.number('6')">6</button>
           <button class="calc-btn func" onclick="calc.func('fact')">n!</button>
-          <button class="calc-btn func" onclick="calc.toggleFraction()" title="Toggle fraction display">a/b</button>
+          <button class="calc-btn" onclick="calc.decimal()">.</button>
           
           <button class="calc-btn" onclick="calc.number('1')">1</button>
           <button class="calc-btn" onclick="calc.number('2')">2</button>
@@ -535,6 +536,11 @@ const calc = {
         this.update();
       },
       
+      clearEntry() {
+        this.current = '0';
+        this.update();
+      },
+      
       backspace() {
         if (this.current.length === 1 || this.current === 'Error') this.current = '0';
         else this.current = this.current.slice(0, -1);
@@ -650,6 +656,7 @@ const calc = {
       if (e.key === 'Enter' || e.key === '=') calc.equals();
       if (e.key === 'Escape') calc.clear();
       if (e.key === 'Backspace') calc.backspace();
+      e.preventDefault();
     });
   </script>
 </body>

@@ -42,7 +42,8 @@
           <button class="calc-btn func" onclick="calc.memoryRecall()" title="Memory Recall">MR</button>
           <button class="calc-btn func" onclick="calc.memoryAdd()" title="Memory Add">M+</button>
           <button class="calc-btn func" onclick="calc.memorySub()" title="Memory Subtract">M-</button>
-          <button class="calc-btn clear" onclick="calc.clear()">C</button>
+          <button class="calc-btn clear" onclick="calc.clearAll()">C</button>
+          <button class="calc-btn" onclick="calc.clearEntry()">CE</button>
           <button class="calc-btn" onclick="calc.backspace()">⌫</button>
           <button class="calc-btn" onclick="calc.operator('%')">%</button>
           <button class="calc-btn operator" onclick="calc.operator('/')">÷</button>
@@ -118,9 +119,14 @@
         this.update();
       },
       
-      clear() {
+      clearAll() {
         this.current = '0';
         this.expr = '';
+        this.update();
+      },
+      
+      clearEntry() {
+        this.current = '0';
         this.update();
       },
       
@@ -230,9 +236,9 @@
     document.addEventListener('keydown', (e) => {
       if (e.key >= '0' && e.key <= '9') calc.number(e.key);
       if (e.key === '.') calc.decimal();
-      if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') calc.operator(e.key);
+      if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/' || e.key === '%') calc.operator(e.key);
       if (e.key === 'Enter' || e.key === '=') calc.equals();
-      if (e.key === 'Escape') calc.clear();
+      if (e.key === 'Escape') calc.clearAll();
       if (e.key === 'Backspace') calc.backspace();
     });
   </script>
