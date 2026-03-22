@@ -9,10 +9,213 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <style>
-    .graph-page { padding: 3rem 2rem; max-width: 1000px; margin: 0 auto; }
-    .graph-header { text-align: center; margin-bottom: 2rem; }
-    .graph-header h1 { font-size: 2rem; margin-bottom: 0.3rem; }
-    .graph-header p { color: var(--text-muted); }
+    .graph-full {
+      display: flex;
+      gap: 1rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+    .graph-sidebar {
+      width: 320px;
+      flex-shrink: 0;
+      background: var(--card-bg);
+      border: 3px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      max-height: calc(100vh - 150px);
+      overflow-y: auto;
+    }
+    .graph-main {
+      flex: 1;
+      min-width: 0;
+    }
+    .func-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+    }
+    .func-row.active { border-color: var(--accent); }
+    .func-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    .func-row input[type="text"] {
+      flex: 1;
+      padding: 0.4rem;
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--card-bg);
+      color: var(--text);
+    }
+    .func-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 2px solid var(--border);
+    }
+    .graph-canvas-wrap {
+      background: var(--card-bg);
+      border: 3px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      position: relative;
+    }
+    #graphCanvas {
+      width: 100%;
+      height: 450px;
+      display: block;
+      cursor: crosshair;
+    }
+    .graph-controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .graph-controls button {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      padding: 0.4rem 0.8rem;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .graph-controls button:hover { background: var(--bg-secondary); }
+    .graph-controls button.active { background: var(--border); color: var(--bg); }
+    .mode-tabs {
+      display: flex;
+      gap: 0.3rem;
+      margin-bottom: 1rem;
+    }
+    .mode-tabs button {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      padding: 0.4rem 0.8rem;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .mode-tabs button.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    .param-inputs {
+      display: none;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .param-inputs.show { display: flex; }
+    .param-inputs input {
+      width: 60px;
+      padding: 0.3rem;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--card-bg);
+      color: var(--text);
+    }
+    .trace-info {
+      position: absolute;
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      padding: 0.5rem;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      border-radius: 4px;
+      pointer-events: none;
+      display: none;
+    }
+    .table-section {
+      margin-top: 1rem;
+      border-top: 2px solid var(--border);
+      padding-top: 1rem;
+    }
+    .table-section h4 {
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    .table-values {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      overflow-x: auto;
+    }
+    .table-values table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .table-values th, .table-values td {
+      padding: 0.3rem;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+    .slider-section {
+      margin-top: 1rem;
+      border-top: 2px solid var(--border);
+      padding-top: 1rem;
+    }
+    .slider-section h4 {
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .slider-row label {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      width: 20px;
+    }
+    .slider-row input[type="range"] {
+      flex: 1;
+    }
+    .slider-row span {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      width: 50px;
+      text-align: right;
+    }
+    .axis-range {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .axis-range label {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+    }
+    .axis-range input {
+      width: 60px;
+      padding: 0.3rem;
+      font-family: var(--mono);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--card-bg);
+      color: var(--text);
+    }
+    @media (max-width: 900px) {
+      .graph-full { flex-direction: column; }
+      .graph-sidebar { width: 100%; max-height: none; }
+      #graphCanvas { height: 350px; }
+    }
   </style>
 </head>
 <body>
@@ -27,46 +230,44 @@
     </nav>
   </header>
 
-  <main class="graph-page">
-    <div class="graph-header">
-      <h1>Graph Calculator</h1>
-      <p>Plot mathematical functions (TI-84 style)</p>
-    </div>
-    <div class="graph-container">
-      <div class="graph-input">
-        <input type="text" id="graphFunction" placeholder="e.g., 2X+3, X^2-4, sin(X)" value="2X+3">
-        <button onclick="drawGraph()">Plot</button>
+  <main>
+    <div class="graph-full">
+      <div class="graph-sidebar">
+        <div class="mode-tabs">
+          <button class="active" onclick="setMode('func')">Y=</button>
+          <button onclick="setMode('param')">Param</button>
+          <button onclick="setMode('polar')">Polar</button>
+        </div>
+        <div class="axis-range">
+          <div><label>X:</label> <input type="number" id="xMin" value="-10" onchange="drawGraph()"> to <input type="number" id="xMax" value="10" onchange="drawGraph()"></div>
+          <div><label>Y:</label> <input type="number" id="yMin" value="-10" onchange="drawGraph()"> to <input type="number" id="yMax" value="10" onchange="drawGraph()"></div>
+        </div>
+        <div id="funcInputs"></div>
+        <div id="paramInputs" class="param-inputs"></div>
+        <div class="table-section">
+          <h4>Table of Values</h4>
+          <div class="table-values" id="tableValues"></div>
+        </div>
+        <div class="slider-section">
+          <h4>Variables</h4>
+          <div id="sliders"></div>
+        </div>
       </div>
-      <canvas id="graphCanvas" width="600" height="350"></canvas>
-      <div class="graph-examples">
-        <span>Linear:</span>
-        <button onclick="setGraph('2X+3')">2X+3</button>
-        <button onclick="setGraph('3X-1')">3X-1</button>
-        <button onclick="setGraph('-X+2')">-X+2</button>
-        <span>Quadratic:</span>
-        <button onclick="setGraph('X^2')">X²</button>
-        <button onclick="setGraph('X^2-4')">X²-4</button>
-        <button onclick="setGraph('X^2-2X+1')">X²-2X+1</button>
-        <span>Cubic:</span>
-        <button onclick="setGraph('X^3')">X³</button>
-        <button onclick="setGraph('X^3-X')">X³-X</button>
-        <span>Trig:</span>
-        <button onclick="setGraph('sin(X)')">sin</button>
-        <button onclick="setGraph('cos(X)')">cos</button>
-        <button onclick="setGraph('tan(X)')">tan</button>
-        <span>Other:</span>
-        <button onclick="setGraph('1/X')">1/X</button>
-        <button onclick="setGraph('sqrt(X)')">√X</button>
-        <button onclick="setGraph('abs(X)')">|X|</button>
-        <button onclick="setGraph('e^X')">eˣ</button>
-        <button onclick="setGraph('2^X')">2ˣ</button>
-        <button onclick="setGraph('ln(X)')">ln</button>
-        <button onclick="setGraph('log(X)')">log</button>
-        <button onclick="setGraph('X^(1/3)')">∛X</button>
-        <span>Inverse:</span>
-        <button onclick="setGraph('asin(X)')">sin⁻¹</button>
-        <button onclick="setGraph('acos(X)')">cos⁻¹</button>
-        <button onclick="setGraph('atan(X)')">tan⁻¹</button>
+      <div class="graph-main">
+        <div class="graph-controls">
+          <button onclick="zoomIn()">Zoom +</button>
+          <button onclick="zoomOut()">Zoom -</button>
+          <button onclick="zoomFit()">Fit</button>
+          <button onclick="setZoom('trig')">Trig</button>
+          <button onclick="setZoom('dec')">Dec</button>
+          <button onclick="toggleTrace()" id="traceBtn">Trace</button>
+          <button onclick="findRoots()">Find Roots</button>
+          <button onclick="generateTable()">Table</button>
+        </div>
+        <div class="graph-canvas-wrap">
+          <canvas id="graphCanvas"></canvas>
+          <div class="trace-info" id="traceInfo"></div>
+        </div>
       </div>
     </div>
   </main>
@@ -76,6 +277,31 @@
   </footer>
 
   <script>
+    const colors = ['#e63946', '#2a9d8f', '#457b9d', '#f4a261', '#9b5de5', '#00b4d8'];
+    let mode = 'func';
+    let functions = [
+      { expr: 'X+2', active: true },
+      { expr: 'X^2', active: true },
+      { expr: 'sin(X)', active: false },
+      { expr: '', active: false },
+      { expr: '', active: false },
+      { expr: '', active: false }
+    ];
+    let paramFuncs = [
+      { x: '3*cos(T)', y: '2*sin(T)', active: true },
+      { x: 'T', y: 'T^2', active: false }
+    ];
+    let polarFuncs = [
+      { expr: '2*cos(θ)', active: true },
+      { expr: '1+cos(θ)', active: false }
+    ];
+    let variables = { a: 1, b: 1, c: 1, d: 0 };
+    let isTracing = false;
+    let traceX = 0;
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+    let xMin = -10, xMax = 10, yMin = -10, yMax = 10;
+
     function toggleTheme() {
       const html = document.documentElement;
       if (html.getAttribute('data-theme') === 'dark') {
@@ -91,186 +317,413 @@
       document.documentElement.setAttribute('data-theme', 'dark');
     }
 
-    function setGraph(expr) {
-      document.getElementById('graphFunction').value = expr;
+    function setMode(m) {
+      mode = m;
+      document.querySelectorAll('.mode-tabs button').forEach((b, i) => {
+        b.classList.toggle('active', ['func', 'param', 'polar'].indexOf(m) === i);
+      });
+      document.getElementById('funcInputs').style.display = m === 'func' ? 'block' : 'none';
+      document.getElementById('paramInputs').classList.toggle('show', m !== 'func');
       drawGraph();
     }
 
-    function parseExpression(input) {
-      let expr = input.trim();
-      if (!expr) return 'sin(X)';
-      
-      // Remove Y=, f(X)=, = prefix
-      expr = expr.replace(/^[YFXyfx()=]+\s*=/i, '');
-      
-      // Handle negation with minus sign at start: -X -> (0-X)
-      if (expr.startsWith('-')) {
-        expr = '0' + expr;
+    function generateFuncInputs() {
+      const container = document.getElementById('funcInputs');
+      if (mode === 'func') {
+        container.innerHTML = functions.map((f, i) => `
+          <div class="func-row ${f.active ? 'active' : ''}">
+            <input type="checkbox" ${f.active ? 'checked' : ''} onchange="toggleFunc(${i})">
+            <span class="func-color" style="background:${colors[i]}"></span>
+            <span style="font-family:var(--mono);font-size:0.8rem;">Y${i+1}=</span>
+            <input type="text" value="${f.expr}" placeholder="X" oninput="updateFunc(${i}, this.value)" onkeypress="if(event.key==='Enter')drawGraph()">
+          </div>
+        `).join('');
+      } else if (mode === 'param') {
+        container.innerHTML = '';
+        document.getElementById('paramInputs').innerHTML = paramFuncs.map((f, i) => `
+          <div class="func-row ${f.active ? 'active' : ''}">
+            <input type="checkbox" ${f.active ? 'checked' : ''} onchange="toggleParam(${i})">
+            <span class="func-color" style="background:${colors[i]}"></span>
+            <span style="font-family:var(--mono);font-size:0.8rem;">X${i+1}=</span>
+            <input type="text" value="${f.x}" placeholder="T" style="width:80px" oninput="updateParamX(${i}, this.value)">
+            <span style="font-family:var(--mono);font-size:0.8rem;">Y${i+1}=</span>
+            <input type="text" value="${f.y}" placeholder="T" style="width:80px" oninput="updateParamY(${i}, this.value)">
+          </div>
+        `).join('');
+      } else {
+        container.innerHTML = '';
+        document.getElementById('paramInputs').innerHTML = polarFuncs.map((f, i) => `
+          <div class="func-row ${f.active ? 'active' : ''}">
+            <input type="checkbox" ${f.active ? 'checked' : ''} onchange="togglePolar(${i})">
+            <span class="func-color" style="background:${colors[i]}"></span>
+            <span style="font-family:var(--mono);font-size:0.8rem;">r${i+1}=</span>
+            <input type="text" value="${f.expr}" placeholder="θ" oninput="updatePolar(${i}, this.value)">
+          </div>
+        `).join('');
       }
-      
-      // Replace ^ with **
-      expr = expr.replace(/\^/g, '**');
-      
-      // Auto-add * between number and variable: 2X -> 2*X
-      expr = expr.replace(/(\d)([A-Za-z])/g, '$1*$2');
-      expr = expr.replace(/([A-Za-z])(\d)/g, '$1*$2');
-      // Auto-add * before parenthesis: 2(X) -> 2*(X)
-      expr = expr.replace(/(\d)(\()/g, '$1*$2');
-      // Auto-add * after variable: X(2) -> X*(2)
-      expr = expr.replace(/([A-Za-z])(\()/g, '$1*$2');
-      // Auto-add * between )(
-      expr = expr.replace(/\)(\()/g, ')*$1');
-      
-      // Replace constants
-      expr = expr.replace(/\bpi\b/gi, 'Math.PI');
-      expr = expr.replace(/\be\b(?![x])/gi, 'Math.E');
-      
-      // Replace math functions - order matters!
-      // Trigonometric
-      expr = expr.replace(/\bsin\b/g, 'Math.sin');
-      expr = expr.replace(/\bcos\b/g, 'Math.cos');
-      expr = expr.replace(/\btan\b/g, 'Math.tan');
-      expr = expr.replace(/\bcsc\b/g, '(1/Math.sin)');
-      expr = expr.replace(/\bsec\b/g, '(1/Math.cos)');
-      expr = expr.replace(/\bcot\b/g, '(1/Math.tan)');
-      
-      // Inverse trig
-      expr = expr.replace(/\basin\b/g, 'Math.asin');
-      expr = expr.replace(/\bacos\b/g, 'Math.acos');
-      expr = expr.replace(/\batan\b/g, 'Math.atan');
-      
-      // Roots and powers
-      expr = expr.replace(/\bsqrt\b/g, 'Math.sqrt');
-      expr = expr.replace(/\bcbrt\b/g, 'Math.cbrt');
-      expr = expr.replace(/\babs\b/g, 'Math.abs');
-      
-      // Logarithms
-      expr = expr.replace(/\bln\b/g, 'Math.log');
-      expr = expr.replace(/\blog\b(?!\d)/g, 'Math.log10');
-      expr = expr.replace(/\blog(\d+)\b/g, '(Math.log(X)/Math.log($1))');
-      
-      // Exponential
-      expr = expr.replace(/\bexp\b/g, 'Math.exp');
-      
-      // Floor/int
-      expr = expr.replace(/\bfloor\b/g, 'Math.floor');
-      expr = expr.replace(/\bint\b/g, 'Math.floor');
-      
-      // Handle e^X specially: e^X -> Math.exp(X)
-      expr = expr.replace(/\be\*\*([A-Za-zX]+)/g, 'Math.exp($1)');
-      expr = expr.replace(/\be\^([A-Za-zX]+)/g, 'Math.exp($1)');
-      
-      // Handle a^X: 2^X -> Math.pow(2, X)
-      expr = expr.replace(/\b(\d+)\*\*([A-Za-zX]+)/g, 'Math.pow($1, $2)');
-      
-      return expr;
+    }
+
+    function toggleFunc(i) { functions[i].active = !functions[i].active; generateFuncInputs(); drawGraph(); }
+    function updateFunc(i, v) { functions[i].expr = v; }
+    function toggleParam(i) { paramFuncs[i].active = !paramFuncs[i].active; generateFuncInputs(); drawGraph(); }
+    function updateParamX(i, v) { paramFuncs[i].x = v; }
+    function updateParamY(i, v) { paramFuncs[i].y = v; }
+    function togglePolar(i) { polarFuncs[i].active = !polarFuncs[i].active; generateFuncInputs(); drawGraph(); }
+    function updatePolar(i, v) { polarFuncs[i].expr = v; }
+
+    function parseMath(expr) {
+      if (!expr) return null;
+      let e = expr.trim();
+      if (!e) return null;
+      e = e.replace(/^[YFXyfx()=]+\s*=/i, '');
+      if (e.startsWith('-')) e = '0' + e;
+      e = e.replace(/\^/g, '**');
+      e = e.replace(/(\d)([A-Za-z])/g, '$1*$2');
+      e = e.replace(/([A-Za-z])(\d)/g, '$1*$2');
+      e = e.replace(/(\d)(\()/g, '$1*$2');
+      e = e.replace(/([A-Za-z])(\()/g, '$1*$2');
+      e = e.replace(/\)(\()/g, ')*$1');
+      e = e.replace(/\bpi\b/gi, 'Math.PI');
+      e = e.replace(/\be\b(?![x])/gi, 'Math.E');
+      e = e.replace(/\bsin\b/g, 'Math.sin');
+      e = e.replace(/\bcos\b/g, 'Math.cos');
+      e = e.replace(/\btan\b/g, 'Math.tan');
+      e = e.replace(/\basin\b/g, 'Math.asin');
+      e = e.replace(/\bacos\b/g, 'Math.acos');
+      e = e.replace(/\batan\b/g, 'Math.atan');
+      e = e.replace(/\bsqrt\b/g, 'Math.sqrt');
+      e = e.replace(/\bcbrt\b/g, 'Math.cbrt');
+      e = e.replace(/\babs\b/g, 'Math.abs');
+      e = e.replace(/\bln\b/g, 'Math.log');
+      e = e.replace(/\blog\b/g, 'Math.log10');
+      e = e.replace(/\bexp\b/g, 'Math.exp');
+      e = e.replace(/\bfloor\b/g, 'Math.floor');
+      e = e.replace(/\bint\b/g, 'Math.floor');
+      e = e.replace(/\be\*\*([A-Za-zX]+)/g, 'Math.exp($1)');
+      e = e.replace(/\be\^([A-Za-zX]+)/g, 'Math.exp($1)');
+      // Add variables
+      Object.keys(variables).forEach(v => {
+        const regex = new RegExp(`\\b${v}\\b(?![A-Za-z])`, 'g');
+        e = e.replace(regex, variables[v]);
+      });
+      return e;
     }
 
     function drawGraph() {
       const canvas = document.getElementById('graphCanvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
-      const input = document.getElementById('graphFunction');
-      if (!input) return;
-      
-      const rawExpr = input.value;
-      const expr = parseExpression(rawExpr);
       
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const bg = isDark ? '#252525' : '#f5f0e8';
+      const bg = isDark ? '#1a1a1a' : '#f5f0e8';
       const fg = isDark ? '#f5f0e8' : '#1a1a1a';
-      const accent = '#e63946';
-      const gridCol = isDark ? '#3a3a3a' : '#ddd5c8';
+      const gridCol = isDark ? '#333' : '#ddd';
       
-      canvas.width = 600;
-      canvas.height = 350;
+      canvas.width = canvas.offsetWidth * 2;
+      canvas.height = canvas.offsetHeight * 2;
+      ctx.scale(2, 2);
+      
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
       
       ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, w, h);
       
-      const w = canvas.width;
-      const h = canvas.height;
-      const scale = 30;
-      const centerX = w / 2;
-      const centerY = h / 2;
+      const xRange = xMax - xMin;
+      const yRange = yMax - yMin;
+      const scaleX = w / xRange;
+      const scaleY = h / yRange;
+      const toPxX = (x) => (x - xMin) * scaleX;
+      const toPxY = (y) => h - (y - yMin) * scaleY;
       
       // Grid
       ctx.strokeStyle = gridCol;
-      ctx.lineWidth = 1;
-      for (let x = centerX % scale; x < w; x += scale) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-      for (let y = centerY % scale; y < h; y += scale) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+      ctx.lineWidth = 0.5;
+      const xStep = getGridStep(xRange);
+      const yStep = getGridStep(yRange);
+      for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) { ctx.beginPath(); ctx.moveTo(toPxX(x), 0); ctx.lineTo(toPxX(x), h); ctx.stroke(); }
+      for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) { ctx.beginPath(); ctx.moveTo(0, toPxY(y)); ctx.lineTo(w, toPxY(y)); ctx.stroke(); }
       
       // Axes
       ctx.strokeStyle = fg;
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(0, centerY); ctx.lineTo(w, centerY);
-      ctx.moveTo(centerX, 0); ctx.lineTo(centerX, h);
+      if (xMin <= 0 && xMax >= 0) { ctx.moveTo(toPxX(0), 0); ctx.lineTo(toPxX(0), h); }
+      if (yMin <= 0 && yMax >= 0) { ctx.moveTo(0, toPxY(0)); ctx.lineTo(w, toPxY(0)); }
       ctx.stroke();
       
-      // Axis labels
-      ctx.fillStyle = isDark ? '#888' : '#666';
-      ctx.font = '11px monospace';
-      ctx.fillText('X', w - 15, centerY - 5);
-      ctx.fillText('Y', centerX + 5, 15);
-      
-      try {
-        const func = new Function('X', 'return ' + expr);
-        
-        ctx.strokeStyle = accent;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        
-        let started = false;
-        let prevY = null;
-        
-        for (let px = 0; px < w; px++) {
-          const X = (px - centerX) / scale;
-          let Y;
-          try { 
-            Y = func(X); 
-          } catch (e) { 
-            started = false;
-            continue; 
-          }
-          
-          if (isFinite(Y) && Math.abs(Y) < 100) {
-            const py = centerY - Y * scale;
-            if (py >= -50 && py <= h + 50) {
-              if (!started) { 
-                ctx.moveTo(px, py); 
-                started = true; 
-              } else {
-                // Skip jumps
-                if (prevY !== null && Math.abs(py - prevY) < h) {
-                  ctx.lineTo(px, py);
-                } else {
-                  ctx.moveTo(px, py);
-                }
-              }
-              prevY = py;
-            } else {
-              started = false;
+      // Draw functions
+      if (mode === 'func') {
+        functions.forEach((f, i) => {
+          if (!f.active || !f.expr) return;
+          const parsed = parseMath(f.expr);
+          if (!parsed) return;
+          try {
+            const func = new Function('X', `return ${parsed}`);
+            ctx.strokeStyle = colors[i];
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            let started = false;
+            for (let px = 0; px < w; px++) {
+              const x = xMin + px / scaleX;
+              const y = func(x);
+              if (isFinite(y) && y >= yMin - yRange && y <= yMax + yRange) {
+                const py = toPxY(y);
+                if (!started) { ctx.moveTo(px, py); started = true; }
+                else ctx.lineTo(px, py);
+              } else { started = false; }
             }
-          } else {
-            started = false;
+            ctx.stroke();
+          } catch (e) {}
+        });
+      } else if (mode === 'param') {
+        paramFuncs.forEach((f, i) => {
+          if (!f.active || !f.x || !f.y) return;
+          const pxExpr = parseMath(f.x);
+          const pyExpr = parseMath(f.y);
+          if (!pxExpr || !pyExpr) return;
+          try {
+            const xFunc = new Function('T', `return ${pxExpr}`);
+            const yFunc = new Function('T', `return ${pyExpr}`);
+            ctx.strokeStyle = colors[i];
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            let started = false;
+            for (let t = xMin; t <= xMax; t += (xRange / 300)) {
+              const x = xFunc(t);
+              const y = yFunc(t);
+              if (isFinite(x) && isFinite(y) && x >= xMin - xRange && x <= xMax + xRange && y >= yMin - yRange && y <= yMax + yRange) {
+                const px = toPxX(x);
+                const py = toPxY(y);
+                if (!started) { ctx.moveTo(px, py); started = true; }
+                else ctx.lineTo(px, py);
+              } else { started = false; }
+            }
+            ctx.stroke();
+          } catch (e) {}
+        });
+      } else {
+        polarFuncs.forEach((f, i) => {
+          if (!f.active || !f.expr) return;
+          const parsed = parseMath(f.expr);
+          if (!parsed) return;
+          try {
+            const rFunc = new Function('θ', `return ${parsed}`);
+            ctx.strokeStyle = colors[i];
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            let started = false;
+            for (let t = 0; t <= 2 * Math.PI; t += (2 * Math.PI / 300)) {
+              const r = rFunc(t);
+              if (isFinite(r)) {
+                const x = r * Math.cos(t);
+                const y = r * Math.sin(t);
+                if (x >= xMin - xRange && x <= xMax + xRange && y >= yMin - yRange && y <= yMax + yRange) {
+                  const px = toPxX(x);
+                  const py = toPxY(y);
+                  if (!started) { ctx.moveTo(px, py); started = true; }
+                  else ctx.lineTo(px, py);
+                } else { started = false; }
+              } else { started = false; }
+            }
+            ctx.stroke();
+          } catch (e) {}
+        });
+      }
+      
+      // Update trace info
+      updateTraceInfo();
+    }
+
+    function getGridStep(range) {
+      const raw = range / 10;
+      const mag = Math.floor(Math.log10(raw));
+      const pow = Math.pow(10, mag);
+      return Math.ceil(raw / pow) * pow;
+    }
+
+    function zoomIn() {
+      const cx = (xMin + xMax) / 2;
+      const cy = (yMin + yMax) / 2;
+      const dx = (xMax - xMin) * 0.4;
+      const dy = (yMax - yMin) * 0.4;
+      xMin = cx - dx; xMax = cx + dx;
+      yMin = cy - dy; yMax = cy + dy;
+      updateAxisInputs();
+      drawGraph();
+    }
+
+    function zoomOut() {
+      const cx = (xMin + xMax) / 2;
+      const cy = (yMin + yMax) / 2;
+      const dx = (xMax - xMin) * 0.6;
+      const dy = (yMax - yMin) * 0.6;
+      xMin = cx - dx; xMax = cx + dx;
+      yMin = cy - dy; yMax = cy + dy;
+      updateAxisInputs();
+      drawGraph();
+    }
+
+    function zoomFit() {
+      xMin = -10; xMax = 10; yMin = -10; yMax = 10;
+      updateAxisInputs();
+      drawGraph();
+    }
+
+    function setZoom(type) {
+      if (type === 'trig') {
+        xMin = -2 * Math.PI; xMax = 2 * Math.PI;
+        yMin = -3; yMax = 3;
+      } else {
+        xMin = -10; xMax = 10; yMin = -10; yMax = 10;
+      }
+      updateAxisInputs();
+      drawGraph();
+    }
+
+    function updateAxisInputs() {
+      document.getElementById('xMin').value = Math.round(xMin);
+      document.getElementById('xMax').value = Math.round(xMax);
+      document.getElementById('yMin').value = Math.round(yMin);
+      document.getElementById('yMax').value = Math.round(yMax);
+    }
+
+    function toggleTrace() {
+      isTracing = !isTracing;
+      document.getElementById('traceBtn').classList.toggle('active', isTracing);
+      document.getElementById('traceInfo').style.display = isTracing ? 'block' : 'none';
+      drawGraph();
+    }
+
+    function updateTraceInfo() {
+      const info = document.getElementById('traceInfo');
+      if (!isTracing || mode !== 'func' || !functions[0].active) {
+        info.style.display = 'none';
+        return;
+      }
+      try {
+        const parsed = parseMath(functions[0].expr);
+        if (!parsed) return;
+        const func = new Function('X', `return ${parsed}`);
+        const y = func(traceX);
+        if (isFinite(y)) {
+          info.textContent = `X=${traceX.toFixed(3)} Y=${y.toFixed(3)}`;
+          info.style.left = '120px';
+          info.style.top = '50px';
+        }
+      } catch (e) {}
+    }
+
+    function findRoots() {
+      if (mode !== 'func' || !functions[0].active || !functions[0].expr) return;
+      const parsed = parseMath(functions[0].expr);
+      if (!parsed) return;
+      const func = new Function('X', `return ${parsed}`);
+      let roots = [];
+      for (let x = xMin; x <= xMax; x += 0.1) {
+        const y1 = func(x);
+        const y2 = func(x + 0.1);
+        if (y1 * y2 < 0) {
+          // Bisection
+          let a = x, b = x + 0.1;
+          for (let i = 0; i < 20; i++) {
+            const c = (a + b) / 2;
+            if (func(a) * func(c) <= 0) b = c;
+            else a = c;
+          }
+          roots.push((a + b) / 2);
+        }
+      }
+      alert(roots.length ? `Roots found: ${roots.map(r => r.toFixed(3)).join(', ')}` : 'No roots found in visible range');
+    }
+
+    function generateTable() {
+      const table = document.getElementById('tableValues');
+      if (mode !== 'func' || !functions[0].active || !functions[0].expr) {
+        table.innerHTML = '<p style="color:var(--text-muted)">No function to table</p>';
+        return;
+      }
+      const parsed = parseMath(functions[0].expr);
+      if (!parsed) return;
+      try {
+        const func = new Function('X', `return ${parsed}`);
+        let html = '<table><tr><th>X</th><th>Y</th></tr>';
+        for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
+          const y = func(x);
+          if (isFinite(y)) {
+            html += `<tr><td>${x}</td><td>${y.toFixed(3)}</td></tr>`;
           }
         }
-        ctx.stroke();
-        
+        html += '</table>';
+        table.innerHTML = html;
       } catch (e) {
-        ctx.fillStyle = accent;
-        ctx.font = '14px monospace';
-        ctx.fillText('Error: ' + rawExpr, 10, 25);
+        table.innerHTML = '<p style="color:var(--text-muted)">Error</p>';
       }
     }
 
-    window.addEventListener('load', drawGraph);
-    
-    // Handle Enter key
-    document.getElementById('graphFunction').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') drawGraph();
+    // Sliders
+    function generateSliders() {
+      const container = document.getElementById('sliders');
+      container.innerHTML = Object.keys(variables).map(v => `
+        <div class="slider-row">
+          <label>${v}</label>
+          <input type="range" min="-5" max="5" step="0.1" value="${variables[v]}" oninput="updateVariable('${v}', this.value)">
+          <span>${variables[v]}</span>
+        </div>
+      `).join('');
+    }
+
+    function updateVariable(v, val) {
+      variables[v] = parseFloat(val);
+      document.querySelectorAll('#sliders .slider-row').forEach((row, i) => {
+        row.querySelector('span').textContent = variables[Object.keys(variables)[i]];
+      });
+      drawGraph();
+    }
+
+    // Canvas events
+    document.getElementById('graphCanvas').addEventListener('mousedown', (e) => {
+      isDragging = true;
+      dragStart = { x: e.clientX, y: e.clientY };
     });
+
+    document.addEventListener('mousemove', (e) => {
+      if (isDragging && e.shiftKey) {
+        const dx = (dragStart.x - e.clientX) * (xMax - xMin) / 400;
+        const dy = (e.clientY - dragStart.y) * (yMax - yMin) / 400;
+        xMin += dx; xMax += dx;
+        yMin += dy; yMax += dy;
+        updateAxisInputs();
+        drawGraph();
+        dragStart = { x: e.clientX, y: e.clientY };
+      }
+      if (isTracing) {
+        const rect = document.getElementById('graphCanvas').getBoundingClientRect();
+        traceX = xMin + ((e.clientX - rect.left) / rect.width) * (xMax - xMin);
+        drawGraph();
+      }
+    });
+
+    document.addEventListener('mouseup', () => { isDragging = false; });
+
+    document.getElementById('graphCanvas').addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const cx = (xMin + xMax) / 2;
+      const cy = (yMin + yMax) / 2;
+      const factor = e.deltaY > 0 ? 1.2 : 0.8;
+      xMin = cx - (cx - xMin) * factor;
+      xMax = cx + (xMax - cx) * factor;
+      yMin = cy - (cy - yMin) * factor;
+      yMax = cy + (yMax - cy) * factor;
+      updateAxisInputs();
+      drawGraph();
+    }, { passive: false });
+
+    generateFuncInputs();
+    generateSliders();
+    drawGraph();
+
+    window.addEventListener('resize', drawGraph);
   </script>
 </body>
 </html>
