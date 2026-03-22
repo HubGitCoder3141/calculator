@@ -471,9 +471,16 @@
       
       const xRange = xMax - xMin;
       const yRange = yMax - yMin;
-      const scale = Math.min(w / xRange, h / yRange);
-      const scaleX = (mode === 'func') ? scale : w / xRange;
-      const scaleY = (mode === 'func') ? scale : h / yRange;
+      const aspect = w / h;
+      const xAspect = xRange / yRange;
+      let scaleX, scaleY;
+      if (xAspect > aspect) {
+        scaleX = w / xRange;
+        scaleY = scaleX;
+      } else {
+        scaleY = h / yRange;
+        scaleX = scaleY;
+      }
       const toPxX = (x) => (x - xMin) * scaleX;
       const toPxY = (y) => h - (y - yMin) * scaleY;
       
