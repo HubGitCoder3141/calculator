@@ -48,7 +48,8 @@
       <a href="basic.html">Basic</a>
       <a href="scientific.html">Scientific</a>
       <a href="graph.html">Graph</a>
-      <button class="theme-btn" onclick="toggleTheme()">◐ Theme</button>
+      <button class="theme-btn" onclick="toggleTheme()">◐</button>
+      <button class="theme-btn" onclick="showSettings()" title="Settings">⚙</button>
     </nav>
   </header>
 
@@ -96,16 +97,37 @@
               <option value="weight">Weight</option>
               <option value="temp">Temperature</option>
               <option value="data">Data</option>
+              <option value="speed">Speed</option>
+              <option value="area">Area</option>
+              <option value="volume">Volume</option>
+              <option value="time">Time</option>
+              <option value="pressure">Pressure</option>
+              <option value="energy">Energy</option>
             </select>
           </div>
           <div class="converter-row">
             <input type="number" id="convInput1" placeholder="Value" oninput="convert()">
-            <span id="convLabel1">cm</span>
+            <span id="convLabel1">m</span>
+            <select id="unitFrom" onchange="convert()" style="width:60px;font-size:0.7rem;"></select>
           </div>
           <div class="converter-row">
             <input type="number" id="convInput2" placeholder="Result" readonly>
-            <span id="convLabel2">m</span>
+            <span id="convLabel2">cm</span>
+            <select id="unitTo" onchange="convert()" style="width:60px;font-size:0.7rem;"></select>
           </div>
+        </div>
+
+        <div class="tool-panel">
+          <h3>Currency</h3>
+          <div class="converter-row">
+            <input type="number" id="currInput1" placeholder="Amount" oninput="convertCurrency()">
+            <select id="currFrom" onchange="convertCurrency()"></select>
+          </div>
+          <div class="converter-row">
+            <input type="number" id="currInput2" placeholder="Result" readonly>
+            <select id="currTo" onchange="convertCurrency()"></select>
+          </div>
+          <button onclick="fetchRates()" style="font-size:0.7rem;padding:0.3rem;margin-top:0.3rem;">Update Rates</button>
         </div>
 
         <div class="tool-panel">
@@ -166,32 +188,73 @@
 
     const convUnits = {
       length: { units: ['m', 'cm', 'mm', 'km', 'in', 'ft', 'yd', 'mi'], factors: [1, 0.01, 0.001, 1000, 0.0254, 0.3048, 0.9144, 1609.344] },
-      weight: { units: ['kg', 'g', 'mg', 'lb', 'oz'], factors: [1, 0.001, 0.000001, 0.453592, 0.0283495] },
+      weight: { units: ['kg', 'g', 'mg', 'lb', 'oz', 'ton'], factors: [1, 0.001, 0.000001, 0.453592, 0.0283495, 907.185] },
       temp: { units: ['°C', '°F', 'K'], factors: [1, 1, 1] },
-      data: { units: ['B', 'KB', 'MB', 'GB', 'TB'], factors: [1, 1024, 1048576, 1073741824, 1099511627776] }
+      data: { units: ['B', 'KB', 'MB', 'GB', 'TB'], factors: [1, 1024, 1048576, 1073741824, 1099511627776] },
+      speed: { units: ['m/s', 'km/h', 'mph', 'knots'], factors: [1, 0.277778, 0.44704, 0.514444] },
+      area: { units: ['m²', 'cm²', 'km²', 'ft²', 'acres'], factors: [1, 0.0001, 1000000, 0.092903, 4046.86] },
+      volume: { units: ['L', 'ml', 'm³', 'gal', 'qt'], factors: [1, 0.001, 1000, 3.78541, 0.946353] },
+      time: { units: ['s', 'ms', 'min', 'hr', 'day', 'week'], factors: [1, 0.001, 60, 3600, 86400, 604800] },
+      pressure: { units: ['Pa', 'kPa', 'bar', 'psi', 'atm'], factors: [1, 1000, 100000, 6894.76, 101325] },
+      energy: { units: ['J', 'kJ', 'cal', 'kcal', 'kWh'], factors: [1, 1000, 4.184, 4184, 3600000] }
     };
+
+    const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'INR', 'MXN'];
+    let rates = { USD: 1, EUR: 0.92, GBP: 0.79, JPY: 149, CAD: 1.36, AUD: 1.53, CHF: 0.88, CNY: 7.24, INR: 83.1, MXN: 17.1 };
 
     function updateConverter() {
       const type = document.getElementById('convType').value;
       const u = convUnits[type];
-      document.getElementById('convLabel1').textContent = u.units[0];
-      document.getElementById('convLabel2').textContent = u.units[1];
+      const unitFrom = document.getElementById('unitFrom');
+      const unitTo = document.getElementById('unitTo');
+      unitFrom.innerHTML = u.units.map((w, i) => `<option value="${i}">${w}</option>`).join('');
+      unitTo.innerHTML = u.units.map((w, i) => `<option value="${i}" ${i === 1 ? 'selected' : ''}>${w}</option>`).join('');
       convert();
     }
 
     function convert() {
       const type = document.getElementById('convType').value;
       const val = parseFloat(document.getElementById('convInput1').value);
+      const fromIdx = parseInt(document.getElementById('unitFrom').value);
+      const toIdx = parseInt(document.getElementById('unitTo').value);
       if (isNaN(val)) { document.getElementById('convInput2').value = ''; return; }
       const u = convUnits[type];
       if (type === 'temp') {
-        const c = document.getElementById('convLabel1').textContent === '°C' ? val : document.getElementById('convLabel1').textContent === '°F' ? (val-32)*5/9 : val - 273.15;
-        const out = document.getElementById('convLabel2').textContent === '°C' ? c : document.getElementById('convLabel2').textContent === '°F' ? c*9/5+32 : c + 273.15;
-        document.getElementById('convInput2').value = out.toFixed(4);
+        const celsius = fromIdx === 0 ? val : fromIdx === 1 ? (val - 32) * 5 / 9 : val - 273.15;
+        const result = toIdx === 0 ? celsius : toIdx === 1 ? celsius * 9 / 5 + 32 : celsius + 273.15;
+        document.getElementById('convInput2').value = result.toFixed(4);
       } else {
-        const base = val * u.factors[0];
-        document.getElementById('convInput2').value = (base / u.factors[1]).toFixed(4);
+        const base = val * u.factors[fromIdx];
+        document.getElementById('convInput2').value = (base / u.factors[toIdx]).toFixed(4);
       }
+    }
+
+    async function fetchRates() {
+      try {
+        const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        const data = await res.json();
+        rates = data.rates;
+        convertCurrency();
+        alert('Rates updated!');
+      } catch (e) {
+        alert('Could not fetch rates. Using cached rates.');
+      }
+    }
+
+    function convertCurrency() {
+      const val = parseFloat(document.getElementById('currInput1').value);
+      const from = document.getElementById('currFrom').value;
+      const to = document.getElementById('currTo').value;
+      if (isNaN(val)) { document.getElementById('currInput2').value = ''; return; }
+      const result = (val / rates[from]) * rates[to];
+      document.getElementById('currInput2').value = result.toFixed(2);
+    }
+
+    function initCurrency() {
+      const from = document.getElementById('currFrom');
+      const to = document.getElementById('currTo');
+      from.innerHTML = currencies.map(c => `<option value="${c}">${c}</option>`).join('');
+      to.innerHTML = currencies.map(c => `<option value="${c}" ${c === 'EUR' ? 'selected' : ''}>${c}</option>`).join('');
     }
 
     function generateRandom() {
@@ -219,6 +282,81 @@
     }
 
     loadHistory();
+    initCurrency();
+
+    function showSettings() {
+      document.getElementById('settingsModal').style.display = 'flex';
+    }
+
+    function closeSettings() {
+      document.getElementById('settingsModal').style.display = 'none';
+    }
+
+    function saveSettings() {
+      localStorage.setItem('defaultMode', document.getElementById('defaultMode').value);
+      localStorage.setItem('decimalPrecision', document.getElementById('decimalPrecision').value);
+      localStorage.setItem('defaultAngle', document.getElementById('defaultAngle').value);
+      localStorage.setItem('historyLimit', document.getElementById('historyLimit').value);
+      localStorage.setItem('soundEnabled', document.getElementById('soundEnabled').checked);
+      closeSettings();
+      alert('Settings saved!');
+    }
+
+    function resetSettings() {
+      if (confirm('Reset all settings to default?')) {
+        localStorage.clear();
+        location.reload();
+      }
+    }
   </script>
+
+  <div id="settingsModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeSettings()">&times;</span>
+      <h3>Settings</h3>
+      <div class="settings-group">
+        <label>Default Mode</label>
+        <select id="defaultMode">
+          <option value="basic">Basic</option>
+          <option value="scientific">Scientific</option>
+          <option value="graph">Graph</option>
+        </select>
+      </div>
+      <div class="settings-group">
+        <label>Decimal Precision</label>
+        <input type="range" id="decimalPrecision" min="0" max="10" value="10">
+        <span id="precVal">10</span>
+      </div>
+      <div class="settings-group">
+        <label>Default Angle Unit</label>
+        <select id="defaultAngle">
+          <option value="RAD">Radians</option>
+          <option value="DEG">Degrees</option>
+          <option value="GRAD">Gradians</option>
+        </select>
+      </div>
+      <div class="settings-group">
+        <label>History Limit</label>
+        <input type="number" id="historyLimit" min="5" max="100" value="50">
+      </div>
+      <div class="settings-group">
+        <label><input type="checkbox" id="soundEnabled"> Enable click sounds</label>
+      </div>
+      <div class="settings-btns">
+        <button onclick="saveSettings()">Save</button>
+        <button onclick="resetSettings()" class="secondary">Reset All</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .settings-group { margin-bottom: 1rem; }
+    .settings-group label { display: block; font-family: var(--mono); font-size: 0.8rem; margin-bottom: 0.3rem; }
+    .settings-group select, .settings-group input[type="number"] { width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); }
+    .settings-group input[type="range"] { width: 70%; }
+    .settings-btns { display: flex; gap: 0.5rem; margin-top: 1rem; }
+    .settings-btns button { flex: 1; padding: 0.5rem; background: var(--accent); color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    .settings-btns button.secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  </style>
 </body>
 </html>

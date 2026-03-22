@@ -17,7 +17,8 @@
       <a href="basic.html" class="active">Basic</a>
       <a href="scientific.html">Scientific</a>
       <a href="graph.html">Graph</a>
-      <button class="theme-btn" onclick="toggleTheme()">◐ Theme</button>
+      <button class="theme-btn" onclick="toggleTheme()">◐</button>
+      <button class="theme-btn" onclick="showSettings()" title="Settings">⚙</button>
     </nav>
   </header>
 
@@ -238,8 +239,17 @@
       },
       
       clearHistory() {
-        localStorage.removeItem('basicHistory');
-        renderHistory([]);
+        if (confirm('Clear all history?')) {
+          localStorage.removeItem('basicHistory');
+          renderHistory([]);
+        }
+      },
+      
+      deleteHistory(time) {
+        const hist = JSON.parse(localStorage.getItem('basicHistory') || '[]');
+        const filtered = hist.filter(h => h.time !== time);
+        localStorage.setItem('basicHistory', JSON.stringify(filtered));
+        renderHistory(filtered);
       }
     };
 
@@ -250,10 +260,11 @@
         el.innerHTML = '<div style="color: var(--text-muted); font-size: 0.8rem;">No calculations yet</div>';
         return;
       }
-      el.innerHTML = hist.slice(0, 10).map(item => `
-        <div class="history-item" onclick="recall('${item.result}')">
-          <div class="expr">${item.expr}</div>
-          <div class="result">= ${item.result}</div>
+      el.innerHTML = hist.slice(0, 20).map(item => `
+        <div class="history-item">
+          <div class="expr" onclick="recall('${item.result}')">${item.expr}</div>
+          <div class="result" onclick="recall('${item.result}')">= ${item.result}</div>
+          <button class="hist-del" onclick="calc.deleteHistory(${item.time})">×</button>
         </div>
       `).join('');
     }
@@ -273,6 +284,36 @@
       if (e.key === 'Escape') calc.clearAll();
       if (e.key === 'Backspace') calc.backspace();
     });
+
+    function showSettings() {
+      document.getElementById('settingsModal').style.display = 'flex';
+    }
+    function closeSettings() {
+      document.getElementById('settingsModal').style.display = 'none';
+    }
+    function saveSettings() {
+      localStorage.setItem('defaultMode', document.getElementById('defaultMode').value);
+      localStorage.setItem('decimalPrecision', document.getElementById('decimalPrecision').value);
+      localStorage.setItem('defaultAngle', document.getElementById('defaultAngle').value);
+      localStorage.setItem('historyLimit', document.getElementById('historyLimit').value);
+      localStorage.setItem('soundEnabled', document.getElementById('soundEnabled').checked);
+      closeSettings();
+    }
+    function resetSettings() {
+      if (confirm('Reset all settings?')) { localStorage.clear(); location.reload(); }
+    }
   </script>
+  <div id="settingsModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeSettings()">&times;</span>
+      <h3>Settings</h3>
+      <div class="settings-group"><label>Default Mode</label><select id="defaultMode"><option value="basic">Basic</option><option value="scientific">Scientific</option><option value="graph">Graph</option></select></div>
+      <div class="settings-group"><label>Decimal Precision</label><input type="range" id="decimalPrecision" min="0" max="10" value="10"><span id="precVal">10</span></div>
+      <div class="settings-group"><label>Default Angle</label><select id="defaultAngle"><option value="RAD">Radians</option><option value="DEG">Degrees</option><option value="GRAD">Gradians</option></select></div>
+      <div class="settings-group"><label>History Limit</label><input type="number" id="historyLimit" min="5" max="100" value="50"></div>
+      <div class="settings-group"><label><input type="checkbox" id="soundEnabled"> Enable sound</label></div>
+      <div class="settings-btns"><button onclick="saveSettings()">Save</button><button onclick="resetSettings()" class="secondary">Reset</button></div>
+    </div>
+  </div>
 </body>
 </html>

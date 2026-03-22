@@ -226,7 +226,8 @@
       <a href="basic.html">Basic</a>
       <a href="scientific.html">Scientific</a>
       <a href="graph.html" class="active">Graph</a>
-      <button class="theme-btn" onclick="toggleTheme()">◐ Theme</button>
+      <button class="theme-btn" onclick="toggleTheme()">◐</button>
+      <button class="theme-btn" onclick="showSettings()" title="Settings">⚙</button>
     </nav>
   </header>
 
@@ -256,14 +257,22 @@
       </div>
       <div class="graph-main">
         <div class="graph-controls">
+          <button onclick="undo()" title="Undo">↶</button>
+          <button onclick="redo()" title="Redo">↷</button>
           <button onclick="zoomIn()">Zoom +</button>
           <button onclick="zoomOut()">Zoom -</button>
           <button onclick="zoomFit()">Fit</button>
           <button onclick="setZoom('trig')">Trig</button>
           <button onclick="setZoom('dec')">Dec</button>
+          <button onclick="toggleGrid()" id="gridBtn">Grid</button>
           <button onclick="toggleTrace()" id="traceBtn">Trace</button>
           <button onclick="findRoots()">Roots</button>
+          <button onclick="find extrema()">Extr</button>
+          <button onclick="findIntersection()">∩</button>
+          <button onclick="showIntegral()">∫</button>
+          <button onclick="showTangent()">Tan</button>
           <button onclick="generateTable()">Table</button>
+          <button onclick="shareURL()">Share</button>
           <button onclick="downloadPNG()">PNG</button>
           <button onclick="downloadSVG()">SVG</button>
         </div>
@@ -306,6 +315,9 @@
     ];
     let variables = { a: 1, b: 1, c: 1, d: 0 };
     let isTracing = false;
+    let showGrid = true;
+    let undoStack = [];
+    let redoStack = [];
     let traceX = 0;
     let isDragging = false;
     let dragStart = { x: 0, y: 0 };
@@ -446,7 +458,6 @@
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       const bg = isDark ? '#1a1a1a' : '#f5f0e8';
       const fg = isDark ? '#f5f0e8' : '#1a1a1a';
-      const gridCol = isDark ? '#333' : '#ddd';
       
       canvas.width = canvas.offsetWidth * 2;
       canvas.height = canvas.offsetHeight * 2;
@@ -465,13 +476,17 @@
       const toPxX = (x) => (x - xMin) * scaleX;
       const toPxY = (y) => h - (y - yMin) * scaleY;
       
+      const gridCol = showGrid ? (isDark ? '#333' : '#ddd') : 'transparent';
+      
       // Grid
       ctx.strokeStyle = gridCol;
       ctx.lineWidth = 0.5;
       const xStep = getGridStep(xRange);
       const yStep = getGridStep(yRange);
-      for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) { ctx.beginPath(); ctx.moveTo(toPxX(x), 0); ctx.lineTo(toPxX(x), h); ctx.stroke(); }
-      for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) { ctx.beginPath(); ctx.moveTo(0, toPxY(y)); ctx.lineTo(w, toPxY(y)); ctx.stroke(); }
+      if (showGrid) {
+        for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) { ctx.beginPath(); ctx.moveTo(toPxX(x), 0); ctx.lineTo(toPxX(x), h); ctx.stroke(); }
+        for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) { ctx.beginPath(); ctx.moveTo(0, toPxY(y)); ctx.lineTo(w, toPxY(y)); ctx.stroke(); }
+      }
       
       // Axes
       ctx.strokeStyle = fg;
@@ -676,6 +691,12 @@ function setZoom(type) {
       drawGraph();
     }
 
+    function toggleGrid() {
+      showGrid = !showGrid;
+      document.getElementById('gridBtn').classList.toggle('active', showGrid);
+      drawGraph();
+    }
+
     function updateTraceInfo() {
       const info = document.getElementById('traceInfo');
       if (!isTracing || mode !== 'func' || !functions[0].active) {
@@ -705,7 +726,6 @@ function setZoom(type) {
         const y1 = func(x);
         const y2 = func(x + 0.1);
         if (y1 * y2 < 0) {
-          // Bisection
           let a = x, b = x + 0.1;
           for (let i = 0; i < 20; i++) {
             const c = (a + b) / 2;
@@ -716,6 +736,137 @@ function setZoom(type) {
         }
       }
       alert(roots.length ? `Roots found: ${roots.map(r => r.toFixed(3)).join(', ')}` : 'No roots found in visible range');
+    }
+
+    function findExtrema() {
+      if (mode !== 'func' || !functions[0].active || !functions[0].expr) return;
+      const parsed = parseMath(functions[0].expr);
+      if (!parsed) return;
+      const func = new Function('X', `return ${parsed}`);
+      let extrema = [];
+      for (let x = xMin + 0.2; x <= xMax - 0.2; x += 0.1) {
+        const y1 = func(x - 0.1);
+        const y2 = func(x);
+        const y3 = func(x + 0.1);
+        if (y2 > y1 && y2 > y3) extrema.push({ x, y: y2, type: 'max' });
+        if (y2 < y1 && y2 < y3) extrema.push({ x, y: y2, type: 'min' });
+      }
+      if (extrema.length) {
+        alert(`Extrema found:\n${extrema.map(e => `${e.type.toUpperCase()}: X=${e.x.toFixed(3)}, Y=${e.y.toFixed(3)}`).join('\n')}`);
+      } else {
+        alert('No extrema found in visible range');
+      }
+    }
+
+    function findIntersection() {
+      if (mode !== 'func' || !functions[0].active || !functions[1].active || !functions[0].expr || !functions[1].expr) {
+        alert('Need at least 2 active functions');
+        return;
+      }
+      const parsed1 = parseMath(functions[0].expr);
+      const parsed2 = parseMath(functions[1].expr);
+      if (!parsed1 || !parsed2) return;
+      const func1 = new Function('X', `return ${parsed1}`);
+      const func2 = new Function('X', `return ${parsed2}`);
+      let intersections = [];
+      for (let x = xMin; x <= xMax; x += 0.1) {
+        const y1 = func1(x);
+        const y2 = func2(x);
+        const y1b = func1(x + 0.1);
+        const y2b = func2(x + 0.1);
+        if ((y1 - y2) * (y1b - y2b) < 0) {
+          let a = x, b = x + 0.1;
+          for (let i = 0; i < 20; i++) {
+            const c = (a + b) / 2;
+            if ((func1(a) - func2(a)) * (func1(c) - func2(c)) <= 0) b = c;
+            else a = c;
+          }
+          intersections.push((a + b) / 2);
+        }
+      }
+      alert(intersections.length ? `Intersections: X=${intersections.map(r => r.toFixed(3)).join(', ')}` : 'No intersections found');
+    }
+
+    function showIntegral() {
+      const a = prompt('Lower bound:', xMin.toFixed(1));
+      const b = prompt('Upper bound:', xMax.toFixed(1));
+      if (a === null || b === null) return;
+      const lower = parseFloat(a), upper = parseFloat(b);
+      if (isNaN(lower) || isNaN(upper)) { alert('Invalid bounds'); return; }
+      if (mode !== 'func' || !functions[0].active || !functions[0].expr) return;
+      const parsed = parseMath(functions[0].expr);
+      if (!parsed) return;
+      const func = new Function('X', `return ${parsed}`);
+      let sum = 0;
+      const n = 1000;
+      const step = (upper - lower) / n;
+      for (let i = 0; i < n; i++) {
+        sum += func(lower + i * step) * step;
+      }
+      alert(`Integral from ${lower.toFixed(2)} to ${upper.toFixed(2)}:\nArea ≈ ${sum.toFixed(4)}`);
+    }
+
+    function showTangent() {
+      const x0 = prompt('X value for tangent line:', '0');
+      if (x0 === null) return;
+      const xVal = parseFloat(x0);
+      if (isNaN(xVal)) { alert('Invalid X value'); return; }
+      if (mode !== 'func' || !functions[0].active || !functions[0].expr) return;
+      const parsed = parseMath(functions[0].expr);
+      if (!parsed) return;
+      const func = new Function('X', `return ${parsed}`);
+      const y0 = func(xVal);
+      if (!isFinite(y0)) { alert('Function undefined at this point'); return; }
+      const h = 0.001;
+      const slope = (func(xVal + h) - func(xVal - h)) / (2 * h);
+      alert(`Tangent at X = ${xVal.toFixed(3)}:\nY = ${y0.toFixed(3)}\nSlope = ${slope.toFixed(3)}\nEquation: Y - ${y0.toFixed(3)} = ${slope.toFixed(3)}(X - ${xVal.toFixed(3)})`);
+    }
+
+    function shareURL() {
+      const state = { mode, functions, paramFuncs, polarFuncs, variables, xMin, xMax, yMin, yMax };
+      const encoded = btoa(JSON.stringify(state));
+      const url = window.location.origin + window.location.pathname + '?s=' + encoded;
+      navigator.clipboard.writeText(url).then(() => alert('URL copied to clipboard!'));
+    }
+
+    function undo() {
+      if (undoStack.length === 0) return;
+      const state = undoStack.pop();
+      redoStack.push({ mode, functions: JSON.parse(JSON.stringify(functions)), paramFuncs: JSON.parse(JSON.stringify(paramFuncs)), polarFuncs: JSON.parse(JSON.stringify(polarFuncs)), variables: {...variables}, xMin, xMax, yMin, yMax });
+      mode = state.mode;
+      functions = state.functions;
+      paramFuncs = state.paramFuncs;
+      polarFuncs = state.polarFuncs;
+      variables = state.variables;
+      xMin = state.xMin; xMax = state.xMax; yMin = state.yMin; yMax = state.yMax;
+      setMode(mode);
+      updateAxisInputs();
+      generateFuncInputs();
+      generateSliders();
+      drawGraph();
+    }
+
+    function redo() {
+      if (redoStack.length === 0) return;
+      const state = redoStack.pop();
+      undoStack.push({ mode, functions: JSON.parse(JSON.stringify(functions)), paramFuncs: JSON.parse(JSON.stringify(paramFuncs)), polarFuncs: JSON.parse(JSON.stringify(polarFuncs)), variables: {...variables}, xMin, xMax, yMin, yMax });
+      mode = state.mode;
+      functions = state.functions;
+      paramFuncs = state.paramFuncs;
+      polarFuncs = state.polarFuncs;
+      variables = state.variables;
+      xMin = state.xMin; xMax = state.xMax; yMin = state.yMin; yMax = state.yMax;
+      setMode(mode);
+      updateAxisInputs();
+      generateFuncInputs();
+      generateSliders();
+      drawGraph();
+    }
+
+    function pushUndo() {
+      undoStack.push({ mode, functions: JSON.parse(JSON.stringify(functions)), paramFuncs: JSON.parse(JSON.stringify(paramFuncs)), polarFuncs: JSON.parse(JSON.stringify(polarFuncs)), variables: {...variables }, xMin, xMax, yMin, yMax });
+      redoStack = [];
+      if (undoStack.length > 50) undoStack.shift();
     }
 
     function generateTable() {
@@ -885,8 +1036,9 @@ function setZoom(type) {
 
     function loadState() {
       try {
-        const state = JSON.parse(localStorage.getItem('graphState'));
-        if (state) {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('s')) {
+          const state = JSON.parse(atob(urlParams.get('s')));
           mode = state.mode || 'func';
           functions = state.functions || functions;
           paramFuncs = state.paramFuncs || paramFuncs;
@@ -896,11 +1048,48 @@ function setZoom(type) {
           xMax = state.xMax ?? 10;
           yMin = state.yMin ?? -10;
           yMax = state.yMax ?? 10;
-          setMode(mode);
-          updateAxisInputs();
+        } else {
+          const state = JSON.parse(localStorage.getItem('graphState'));
+          if (state) {
+            mode = state.mode || 'func';
+            functions = state.functions || functions;
+            paramFuncs = state.paramFuncs || paramFuncs;
+            polarFuncs = state.polarFuncs || polarFuncs;
+            variables = state.variables || variables;
+            xMin = state.xMin ?? -10;
+            xMax = state.xMax ?? 10;
+            yMin = state.yMin ?? -10;
+            yMax = state.yMax ?? 10;
+          }
         }
+        setMode(mode);
+        updateAxisInputs();
       } catch (e) {}
     }
+
+    function showSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
+    function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+    function saveSettings() {
+      localStorage.setItem('defaultMode', document.getElementById('defaultMode').value);
+      localStorage.setItem('decimalPrecision', document.getElementById('decimalPrecision').value);
+      localStorage.setItem('defaultAngle', document.getElementById('defaultAngle').value);
+      localStorage.setItem('historyLimit', document.getElementById('historyLimit').value);
+      localStorage.setItem('soundEnabled', document.getElementById('soundEnabled').checked);
+      closeSettings();
+    }
+    function resetSettings() { if (confirm('Reset all settings?')) { localStorage.clear(); location.reload(); } }
   </script>
+  <div id="settingsModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeSettings()">&times;</span>
+      <h3>Settings</h3>
+      <div class="settings-group"><label>Default Mode</label><select id="defaultMode"><option value="basic">Basic</option><option value="scientific">Scientific</option><option value="graph">Graph</option></select></div>
+      <div class="settings-group"><label>Decimal Precision</label><input type="range" id="decimalPrecision" min="0" max="10" value="10"></div>
+      <div class="settings-group"><label>Default Angle</label><select id="defaultAngle"><option value="RAD">Radians</option><option value="DEG">Degrees</option><option value="GRAD">Gradians</option></select></div>
+      <div class="settings-group"><label>History Limit</label><input type="number" id="historyLimit" min="5" max="100" value="50"></div>
+      <div class="settings-group"><label><input type="checkbox" id="soundEnabled"> Enable sound</label></div>
+      <div class="settings-btns"><button onclick="saveSettings()">Save</button><button onclick="resetSettings()" class="secondary">Reset</button></div>
+    </div>
+  </div>
 </body>
 </html>
