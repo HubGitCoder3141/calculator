@@ -97,7 +97,10 @@
       const ctx = canvas.getContext('2d');
       const input = document.getElementById('graphFunction');
       if (!input) return;
-      const expr = input.value || 'Math.sin(x)';
+      let expr = input.value.trim() || 'Math.sin(x)';
+      
+      // Remove y= or f(x)= prefix if present
+      expr = expr.replace(/^(y|f\(x\))\s*=\s*/i, '');
       
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       const bg = isDark ? '#252525' : '#ebe5d9';
