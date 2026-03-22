@@ -46,7 +46,7 @@
     </div>
     <div class="graph-container">
       <div class="graph-input">
-        <input type="text" id="graphFunction" placeholder="e.g., Math.sin(x), x*x, 2*x+1" value="Math.sin(x)">
+        <input type="text" id="graphFunction" placeholder="e.g., 3x+5, x^2, sin(x)" value="3x+5">
         <button onclick="drawGraph()">Plot</button>
       </div>
       <canvas id="graphCanvas" width="600" height="350"></canvas>
@@ -54,14 +54,15 @@
         <span>Try:</span>
         <button onclick="setGraph('x*x')">x²</button>
         <button onclick="setGraph('x*x*x')">x³</button>
-        <button onclick="setGraph('Math.sin(x)')">sin(x)</button>
-        <button onclick="setGraph('Math.cos(x)')">cos(x)</button>
-        <button onclick="setGraph('Math.tan(x)')">tan(x)</button>
-        <button onclick="setGraph('2*x+1')">2x+1</button>
+        <button onclick="setGraph('3x+5')">3x+5</button>
+        <button onclick="setGraph('2x-3')">2x-3</button>
+        <button onclick="setGraph('x*x-4')">x²-4</button>
+        <button onclick="setGraph('sin(x)')">sin(x)</button>
+        <button onclick="setGraph('cos(x)')">cos(x)</button>
+        <button onclick="setGraph('tan(x)')">tan(x)</button>
         <button onclick="setGraph('1/x')">1/x</button>
-        <button onclick="setGraph('Math.sqrt(x)')">√x</button>
-        <button onclick="setGraph('Math.abs(x)')">|x|</button>
-        <button onclick="setGraph('Math.log(x)')">ln(x)</button>
+        <button onclick="setGraph('sqrt(x)')">√x</button>
+        <button onclick="setGraph('abs(x)')">|x|</button>
       </div>
     </div>
   </main>
@@ -101,6 +102,12 @@
       
       // Remove y= or f(x)= prefix if present
       expr = expr.replace(/^(y|f\(x\))\s*=\s*/i, '');
+      
+      // Auto-add * between number and variable: 3x -> 3*x, x3 -> x*3
+      expr = expr.replace(/(\d)([a-zA-Z])/g, '$1*$2');
+      expr = expr.replace(/([a-zA-Z])(\d)/g, '$1*$2');
+      // Handle parentheses: 3(x) -> 3*(x)
+      expr = expr.replace(/(\d)(\()/g, '$1*$2');
       
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       const bg = isDark ? '#252525' : '#ebe5d9';
